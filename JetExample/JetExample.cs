@@ -28,9 +28,10 @@
 //
 // </copyright>
 
+using System;
+using System.Threading;
 using Hbm.Devices.Jet;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace JetExample
 {
@@ -40,31 +41,11 @@ namespace JetExample
         {
             var example = new JetExample();
             Console.ReadKey(true);
-            /*
-            var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            //var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
-            var peer = new JetPeer(connection);
-            peer.connect(OnConnect, new TimeSpan(0, 0, 20));
-            Thread.Sleep(1000);
-
-            JValue stateValue = new JValue(12);
-            peer.add("theState", stateValue, StateCallback, ResponseCallback);
-            // Thread.Sleep(500000);
-
-            for (int i = 0; i < 10; i++)
-            {
-                JValue val = new JValue(i);
-                peer.change("theState", val, ResponseCallback);
-                Thread.Sleep(1000);
-            }
-
-            Thread.Sleep(5000);
-            peer.remove("theState", ResponseCallback);
-            Thread.Sleep(5000);
-            */
         }
 
         private JetPeer peer;
+        private const string stateName = "theState";
+        private int counter;
 
         JetExample()
         {
@@ -72,23 +53,50 @@ namespace JetExample
             //var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
             peer = new JetPeer(connection);
             peer.Connect(OnConnect, new TimeSpan(0, 0, 20));
-
         }
 
         private void OnConnect(bool completed)
         {
-            Console.WriteLine(completed);
+            if (completed)
+            {
+                Console.WriteLine("Successfully connected to Jet daemon!");
+                JValue stateValue = new JValue(12);
+                peer.Add(stateName, stateValue, StateCallback, AddResponseCallback);
+            }
         }
 
-        public static JToken StateCallback(string path, JToken value)
+        private JToken StateCallback(string path, JToken value)
         {
             return new JValue(42);
         }
 
-        public static void ResponseCallback(JToken response)
+        private void AddResponseCallback(JToken response)
         {
-            Console.WriteLine("Got response!");
+            Console.WriteLine("State \"" + stateName + "\" successfully added!");
+            counter = 0;
+            var val = new JValue(counter);
+            peer.Change(stateName, val, ChangeResponseCallback);
+        }
+
+        private void ChangeResponseCallback(JToken response)
+        {
             Console.WriteLine(response);
+            counter++;
+            if (counter < 10)
+            {
+                Thread.Sleep(1000);
+                JValue val = new JValue(counter);
+                peer.Change(stateName, val, ChangeResponseCallback);
+            }
+            else
+            {
+                peer.Remove(stateName, RemoveStateCallback);
+            }
+        }
+
+        private void RemoveStateCallback(JToken response)
+        {
+            Console.WriteLine("State \"" + stateName + "\" successfully removed!");
         }
     }
 }
