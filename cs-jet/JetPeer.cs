@@ -58,13 +58,13 @@ namespace Hbm.Devices.Jet
             this.connection.Connect(completed, timeoutMs);
         }
 
-        public void Info(Action<JToken> responseCallback)
+        public void Info(Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             JetMethod info = new JetMethod(JetMethod.Info, null, responseCallback);
-            this.ExecuteMethod(info);
+            this.ExecuteMethod(info, responseTimeoutMs);
         }
 
-        public void Add(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<JToken> responseCallback)
+        public void Add(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             if (path == null)
             {
@@ -81,10 +81,10 @@ namespace Hbm.Devices.Jet
 
             this.RegisterStateCallback(path, stateCallback);
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
-            this.ExecuteMethod(add);
+            this.ExecuteMethod(add, responseTimeoutMs);
         }
 
-        public void Remove(string path, Action<JToken> responseCallback)
+        public void Remove(string path, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             if (path == null)
             {
@@ -95,10 +95,10 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             JetMethod remove = new JetMethod(JetMethod.Remove, parameters, responseCallback);
-            this.ExecuteMethod(remove);
+            this.ExecuteMethod(remove, responseTimeoutMs);
         }
 
-        public void Set(string path, JToken value, Action<JToken> responseCallback)
+        public void Set(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             if (path == null)
             {
@@ -109,10 +109,10 @@ namespace Hbm.Devices.Jet
             parameters["path"] = path;
             parameters["value"] = value;
             JetMethod set = new JetMethod(JetMethod.Set, parameters, responseCallback);
-            this.ExecuteMethod(set);
+            this.ExecuteMethod(set, responseTimeoutMs);
         }
 
-        public void Change(string path, JToken value, Action<JToken> responseCallback)
+        public void Change(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             if (path == null)
             {
@@ -123,10 +123,10 @@ namespace Hbm.Devices.Jet
             parameters["path"] = path;
             parameters["value"] = value;
             JetMethod change = new JetMethod(JetMethod.Change, parameters, responseCallback);
-            this.ExecuteMethod(change);
+            this.ExecuteMethod(change, responseTimeoutMs);
         }
 
-        public void Call(string path, JToken args, Action<JToken> responseCallback)
+        public void Call(string path, JToken args, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             if (path == null)
             {
@@ -141,10 +141,10 @@ namespace Hbm.Devices.Jet
             }
 
             JetMethod call = new JetMethod(JetMethod.Call, parameters, responseCallback);
-            this.ExecuteMethod(call);
+            this.ExecuteMethod(call, responseTimeoutMs);
         }
 
-        public FetchId Fetch(Matcher matcher, Action<JToken> fetchCallback, Action<JToken> responseCallback)
+        public FetchId Fetch(Matcher matcher, Action<JToken> fetchCallback, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             int fetchId = Interlocked.Increment(ref this.fetchIdCounter);
             JetFetcher fetcher = new JetFetcher(fetchCallback);
@@ -155,18 +155,18 @@ namespace Hbm.Devices.Jet
             parameters["caseInsensitive"] = matcher.CaseInsensitive;
             parameters["id"] = fetchId;
             JetMethod fetch = new JetMethod(JetMethod.Fetch, parameters, responseCallback);
-            this.ExecuteMethod(fetch);
+            this.ExecuteMethod(fetch, responseTimeoutMs);
             return new FetchId(fetchId);
         }
 
-        public void Unfetch(FetchId fetchId, Action<JToken> responseCallback)
+        public void Unfetch(FetchId fetchId, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             this.UnregisterFetcher(fetchId.GetId());
 
             JObject parameters = new JObject();
             parameters["id"] = fetchId.GetId();
             JetMethod unfetch = new JetMethod(JetMethod.Unfetch, parameters, responseCallback);
-            this.ExecuteMethod(unfetch);
+            this.ExecuteMethod(unfetch, responseTimeoutMs);
         }
 
         private void HandleIncomingJson(object obj, StringEventArgs e)
@@ -215,18 +215,40 @@ namespace Hbm.Devices.Jet
             this.HandleStateOrMethodCallbacks(json);
         }
 
-        private void ExecuteMethod(JetMethod method)
+        private void ExecuteMethod(JetMethod method, double timeoutMs)
         {
             if (method.HasResponseCallback())
             {
                 int id = method.GetRequestId();
                 lock (this.openRequests)
                 {
+                    method.requestTimer.Interval = timeoutMs;
+                    method.requestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
+                    method.requestTimer.Start();
                     this.openRequests.Add(id, method);
                 }
             }
 
             this.connection.SendMessage(method.GetJson());
+        }
+
+        private static void RequestTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, JetMethod method)
+        {
+            JetPeer peer = (JetPeer)sender;
+            method.requestTimer.Stop();
+            int id = method.GetRequestId();
+            lock (peer.openRequests)
+            {
+                if (peer.openRequests.ContainsKey(id))
+                {
+                    method = peer.openRequests[id];
+                    peer.openRequests.Remove(id);
+                    lock (method)
+                    {
+                        method.CallResponseCallback(false, null);
+                    }
+                }
+            }
         }
 
         private void RegisterStateCallback(string path, Func<string, JToken, JToken> callback)
@@ -310,7 +332,7 @@ namespace Hbm.Devices.Jet
             JToken newValue = callback(method, json["params"]["value"]);
             if (newValue != null)
             {
-                this.Change(method, newValue, null);
+                this.Change(method, newValue, null, 0);
             }
 
             result["result"] = true;
@@ -404,12 +426,12 @@ namespace Hbm.Devices.Jet
                     {
                         method = this.openRequests[id];
                         this.openRequests.Remove(id);
+                        method.requestTimer.Stop();
+                        lock (method)
+                        {
+                            method.CallResponseCallback(true, json);
+                        }
                     }
-                }
-
-                if (method != null)
-                {
-                    method.CallResponseCallback(json);
                 }
             }
         }

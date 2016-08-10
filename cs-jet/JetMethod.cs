@@ -46,16 +46,19 @@ namespace Hbm.Devices.Jet
         internal const string Remove = "remove";
         internal const string Change = "change";
 
+        internal System.Timers.Timer requestTimer;
+
         private static int requestIdCounter;
         private JObject json;
-        private Action<JToken> responseCallback;
+        private Action<bool, JToken> responseCallback;
         private int requestId;
 
-        internal JetMethod(string method, JObject parameters, Action<JToken> responseCallback)
+        internal JetMethod(string method, JObject parameters, Action<bool, JToken> responseCallback)
         {
             this.responseCallback = responseCallback;
             if (responseCallback != null)
             {
+                this.requestTimer = new System.Timers.Timer();
                 this.requestId = Interlocked.Increment(ref requestIdCounter);
             }
 
@@ -81,11 +84,11 @@ namespace Hbm.Devices.Jet
             return this.requestId;
         }
 
-        internal void CallResponseCallback(JToken response)
+        internal void CallResponseCallback(bool completed, JToken response)
         {
             if (this.responseCallback != null)
             {
-                this.responseCallback(response);
+                this.responseCallback(completed, response);
             }
         }
 

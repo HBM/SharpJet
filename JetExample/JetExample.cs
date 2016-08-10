@@ -61,7 +61,7 @@ namespace JetExample
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 JValue stateValue = new JValue(12);
-                peer.Add(stateName, stateValue, StateCallback, AddResponseCallback);
+                peer.Add(stateName, stateValue, StateCallback, AddResponseCallback, 5000);
             }
             else
             {
@@ -74,15 +74,15 @@ namespace JetExample
             return new JValue(42);
         }
 
-        private void AddResponseCallback(JToken response)
+        private void AddResponseCallback(bool completed, JToken response)
         {
             Console.WriteLine("State \"" + stateName + "\" successfully added!");
             counter = 0;
             var val = new JValue(counter);
-            peer.Change(stateName, val, ChangeResponseCallback);
+            peer.Change(stateName, val, ChangeResponseCallback, 5000);
         }
 
-        private void ChangeResponseCallback(JToken response)
+        private void ChangeResponseCallback(bool completed, JToken response)
         {
             Console.WriteLine(response);
             counter++;
@@ -90,15 +90,15 @@ namespace JetExample
             {
                 Thread.Sleep(1000);
                 JValue val = new JValue(counter);
-                peer.Change(stateName, val, ChangeResponseCallback);
+                peer.Change(stateName, val, ChangeResponseCallback, 5000);
             }
             else
             {
-                peer.Remove(stateName, RemoveStateCallback);
+                peer.Remove(stateName, RemoveStateCallback, 5000);
             }
         }
 
-        private void RemoveStateCallback(JToken response)
+        private void RemoveStateCallback(bool completed, JToken response)
         {
             Console.WriteLine("State \"" + stateName + "\" successfully removed!");
         }

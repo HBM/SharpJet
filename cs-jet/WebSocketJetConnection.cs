@@ -53,10 +53,10 @@ namespace Hbm.Devices.Jet
         public void Connect(Action<bool> completed, double timeoutMs)
         {
             this.connectCompleted = completed;
-            connectTimer = new Timer(timeoutMs);
-            connectTimer.Elapsed += OnOpenElapsed;
-            connectTimer.AutoReset = false;
-            connectTimer.Enabled = true;
+            this.connectTimer = new Timer(timeoutMs);
+            this.connectTimer.Elapsed += this.OnOpenElapsed;
+            this.connectTimer.AutoReset = false;
+            this.connectTimer.Enabled = true;
             this.webSocket.ConnectAsync();
         }
 
@@ -81,22 +81,22 @@ namespace Hbm.Devices.Jet
 
         private void OnOpen(object sender, EventArgs e)
         {
-            lock(this)
+            lock (this)
             {
-                connectTimer.Stop();
+                this.connectTimer.Stop();
 
-                if ((this.connectCompleted != null) && (this.webSocket.IsAlive))
+                if ((this.connectCompleted != null) && this.webSocket.IsAlive)
                 {
                     this.connectCompleted(true);
                 }
             }
         }
 
-        private void OnOpenElapsed(Object source, System.Timers.ElapsedEventArgs e)
+        private void OnOpenElapsed(object source, System.Timers.ElapsedEventArgs e)
         {
-            lock(this)
+            lock (this)
             {
-                connectTimer.Stop();
+                this.connectTimer.Stop();
                 if (!this.webSocket.IsAlive)
                 {
                     this.webSocket.Close();
