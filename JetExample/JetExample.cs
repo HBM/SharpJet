@@ -49,10 +49,10 @@ namespace JetExample
 
         JetExample()
         {
-            var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            //var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            //var connection = new WebSocketJetConnection("wss://172.19.1.1");
+            var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
             peer = new JetPeer(connection);
-            peer.Connect(OnConnect, new TimeSpan(0, 0, 20));
+            peer.Connect(OnConnect, 5000);
         }
 
         private void OnConnect(bool completed)
@@ -62,6 +62,10 @@ namespace JetExample
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 JValue stateValue = new JValue(12);
                 peer.Add(stateName, stateValue, StateCallback, AddResponseCallback);
+            }
+            else
+            {
+                Console.WriteLine("Connection to Jet daemon failed!");
             }
         }
 

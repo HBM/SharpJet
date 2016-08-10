@@ -36,7 +36,7 @@ namespace Hbm.Devices.Jet
     {
         event EventHandler<StringEventArgs> HandleIncomingMessage;
 
-        void Connect(Action<bool> completed, TimeSpan timeout);
+        void Connect(Action<bool> completed, double timeoutMs);
 
         void SendMessage(string json);
     }

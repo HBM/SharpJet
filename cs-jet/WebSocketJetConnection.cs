@@ -31,12 +31,14 @@
 namespace Hbm.Devices.Jet
 {
     using System;
+    using System.Timers;
     using WebSocketSharp;
 
     public class WebSocketJetConnection : IJetConnection, IDisposable
     {
         private WebSocket webSocket;
         private Action<bool> connectCompleted;
+        private Timer connectTimer;
 
         public WebSocketJetConnection(string url)
         {
@@ -48,10 +50,13 @@ namespace Hbm.Devices.Jet
         
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
 
-        public void Connect(Action<bool> completed, TimeSpan timeout)
+        public void Connect(Action<bool> completed, double timeoutMs)
         {
-            // TODO: arm a timer for a connect callback and call connectCompleted(false) in TimerCallback and close/dispose websocket
             this.connectCompleted = completed;
+            connectTimer = new Timer(timeoutMs);
+            connectTimer.Elapsed += OnOpenElapsed;
+            connectTimer.AutoReset = false;
+            connectTimer.Enabled = true;
             this.webSocket.ConnectAsync();
         }
 
@@ -76,7 +81,31 @@ namespace Hbm.Devices.Jet
 
         private void OnOpen(object sender, EventArgs e)
         {
-            this.connectCompleted(this.webSocket.IsAlive);
+            lock(this)
+            {
+                connectTimer.Stop();
+
+                if ((this.connectCompleted != null) && (this.webSocket.IsAlive))
+                {
+                    this.connectCompleted(true);
+                }
+            }
+        }
+
+        private void OnOpenElapsed(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            lock(this)
+            {
+                connectTimer.Stop();
+                if (!this.webSocket.IsAlive)
+                {
+                    this.webSocket.Close();
+                    if (this.connectCompleted != null)
+                    {
+                        this.connectCompleted(this.webSocket.IsAlive);
+                    }
+                }
+            }
         }
 
         private void OnMessage(object sender, MessageEventArgs e)

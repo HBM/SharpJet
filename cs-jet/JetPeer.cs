@@ -53,9 +53,9 @@ namespace Hbm.Devices.Jet
             connection.HandleIncomingMessage += this.HandleIncomingJson;
         }
 
-        public void Connect(Action<bool> completed, TimeSpan timeout)
+        public void Connect(Action<bool> completed, double timeoutMs)
         {
-            this.connection.Connect(completed, timeout);
+            this.connection.Connect(completed, timeoutMs);
         }
 
         public void Info(Action<JToken> responseCallback)
