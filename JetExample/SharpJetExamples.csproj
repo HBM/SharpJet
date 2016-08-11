@@ -53,9 +53,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cs-jet\cs-jet.csproj">
+    <ProjectReference Include="..\cs-jet\SharpJet.csproj">
       <Project>{8e017e78-e6ed-4e30-8b5d-1bdbe2a7cbe8}</Project>
-      <Name>cs-jet</Name>
+      <Name>SharpJet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

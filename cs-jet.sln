@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs-jet", "cs-jet\cs-jet.csproj", "{8E017E78-E6ED-4E30-8B5D-1BDBE2A7CBE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpJet", "cs-jet\SharpJet.csproj", "{8E017E78-E6ED-4E30-8B5D-1BDBE2A7CBE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetExample", "JetExample\JetExample.csproj", "{CD71435F-F489-457E-9516-553D4BB07E93}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpJetExamples", "JetExample\SharpJetExamples.csproj", "{CD71435F-F489-457E-9516-553D4BB07E93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpJetTests", "SharpJetTests\SharpJetTests.csproj", "{0663060B-C81B-4FAC-9825-6028F9CBECBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{CD71435F-F489-457E-9516-553D4BB07E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD71435F-F489-457E-9516-553D4BB07E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD71435F-F489-457E-9516-553D4BB07E93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0663060B-C81B-4FAC-9825-6028F9CBECBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0663060B-C81B-4FAC-9825-6028F9CBECBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0663060B-C81B-4FAC-9825-6028F9CBECBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0663060B-C81B-4FAC-9825-6028F9CBECBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
