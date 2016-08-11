@@ -7,8 +7,8 @@
     <ProjectGuid>{8E017E78-E6ED-4E30-8B5D-1BDBE2A7CBE8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cs_jet</RootNamespace>
-    <AssemblyName>cs-jet</AssemblyName>
+    <RootNamespace>Hbm.Devices.Jet</RootNamespace>
+    <AssemblyName>SharpJet</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
