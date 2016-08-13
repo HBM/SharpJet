@@ -1,0 +1,83 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+
+  <!--
+      msbuild build.xml                     => compile and run unit tests
+      msbuild build.xml /t:CoverageReport   => compile, test anf generate coverage report
+      msbuild build.xml /t:Sonar            => run sonarqube analysis
+
+  -->
+  <PropertyGroup Condition="'$(Configuration)'==''">
+    <Configuration>Debug</Configuration>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--
+      You need to install following nuget packages in your solution first:
+      Nunit.Runners
+      OpenCover
+      ReportGenerator
+
+      versions may change
+    -->
+    <NUnit-ToolPath>packages\NUnit.ConsoleRunner.3.4.1\tools\</NUnit-ToolPath>
+    <OpenCover-ToolPath>packages\OpenCover.4.6.519\tools\</OpenCover-ToolPath>
+    <ReportGenerator-ToolPath>packages\ReportGenerator.2.4.5.0\tools\</ReportGenerator-ToolPath>
+    
+    <!-- your app sln file -->
+    <SolutionFile>SharpJet.sln</SolutionFile>
+    
+    <!-- assembly filter for opencover -->
+    <OpenCover-AssemblyFilter>+[SharpJet]*</OpenCover-AssemblyFilter>
+    
+    <!-- patterns may change depending of your solution layout -->
+    <CoverageFilesPattern>.build\*.coverage.xml</CoverageFilesPattern>
+    <!--TestAssembliesPattern>$(MSBuildProjectDirectory)\*\bin\$(Configuration)\*Tests.dll</TestAssembliesPattern-->
+    <TestAssembliesPattern>$(MSBuildProjectDirectory)\SharpJetTests\bin\$(Configuration)\*Tests.dll</TestAssembliesPattern>
+	
+  </PropertyGroup>
+
+  <UsingTask TaskName="ReportGenerator" AssemblyFile="$(ReportGenerator-ToolPath)\ReportGenerator.exe" />  
+
+  <ItemGroup>
+    <SourceDirectories Include="$(MSBuildProjectDirectory)" />
+  </ItemGroup>
+
+  <Target Name="Clean">
+    <RemoveDir Directories=".build" />
+    <MSBuild Projects="$(SolutionFile)" Targets="Clean" />
+  </Target>
+
+  <Target Name="Compile">
+    <MSBuild Projects="$(SolutionFile)" Targets="Build" />
+  </Target>
+
+  <Target Name="Test" DependsOnTargets="Clean;Compile">
+    <ItemGroup>
+      <TestAssemblies Include="$(TestAssembliesPattern)" />
+    </ItemGroup>
+    <MakeDir Directories=".build" />
+    <Exec Command="$(NUnit-ToolPath)nunit3-console.exe %(TestAssemblies.Identity) /result=.build\%(TestAssemblies.filename)-test-results.xml;format=nunit2" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Test" />
+
+  <Target Name="Coverage" DependsOnTargets="Clean;Compile;Test">
+    <ItemGroup>
+      <TestAssemblies Include="$(TestAssembliesPattern)" />
+    </ItemGroup>
+    <MakeDir Directories=".build" />
+    <!-- /domain=single is not support by the NUnit msbuild task, and it is required for OpenCover coverage test -->
+    <Exec Command="$(OpenCover-ToolPath)OpenCover.Console.exe -register:user -target:&quot;$(NUnit-ToolPath)nunit3-console.exe&quot; -targetargs:&quot;%(TestAssemblies.Identity)&quot; -filter:&quot;$(OpenCover-AssemblyFilter)&quot; -output:.build\%(TestAssemblies.FileName).coverage.xml" />
+  </Target>
+
+  <!--
+      Run ReportGenerator - local coverage history
+  -->
+  <Target Name="CoverageReport" DependsOnTargets="Coverage">
+    <ItemGroup>
+      <CoverageFiles Include="$(CoverageFilesPattern)" />
+    </ItemGroup>
+    <ReportGenerator ReportFiles="@(CoverageFiles)" TargetDirectory=".build\report" ReportTypes="Html" SourceDirectories="@(SourceDirectories)" HistoryDirectory=".coverageHistory"  />
+    <Message Text="Coverage report has been generated: $(MSBuildProjectDirectory)\report\index.htm" />
+  </Target>
+</Project>
