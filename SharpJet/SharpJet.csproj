@@ -11,6 +11,8 @@
     <AssemblyName>SharpJet</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,8 +62,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="scripts\hello.bat">
+      <SubType>Component</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File "$(ProjectDir)\scripts\version.ps1" -git "$(SolutionDir)\packages\PortableGit.2.5.1.01\tools\bin\git.exe" -solutiondir $(SolutionDir) -assembly_info_template "$(ProjectDir)\Properties\AssemblyInfoTemplate.cs" -assembly_info "$(ProjectDir)\Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
