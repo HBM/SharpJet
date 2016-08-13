@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfoTemplate.cs" />
     <Compile Include="FetchId.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
@@ -57,7 +58,6 @@
     <Compile Include="JetMethod.cs" />
     <Compile Include="JetPeer.cs" />
     <Compile Include="Matcher.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSocketJetConnection.cs" />
   </ItemGroup>
   <ItemGroup>
