@@ -15,7 +15,7 @@ $git_hash = & $git rev-parse --verify HEAD
 $git_short_hash = & $git rev-parse --verify --short HEAD
 & $git describe --exact-match --tags HEAD
 $git_tag = $LastExitCode
-$is_tag = $git_tag -and !($is_dirty)
+$is_tag = ($git_tag -eq 0) -and !($is_dirty)
 
 $template_content = Get-Content -Path $assembly_info_template
 if ($is_tag) {
