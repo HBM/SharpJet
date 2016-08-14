@@ -48,11 +48,12 @@ build_script:
       } else {
       	msbuild "$Env:APPVEYOR_BUILD_FOLDER\build.xml" "/p:Configuration=$Env:CONFIGURATION" /t:Coverage /verbosity:minimal
       }
-# after_build:
-#   - ps: >-
-#       if (($env:CONFIGURATION -eq "Release") -and (!$env:APPVEYOR_PULL_REQUEST_NUMBER)) {
-#         $coveralls = (Resolve-Path "$Env:APPVEYOR_BUILD_FOLDER/coveralls.net.*/tools/csmacnz.coveralls.exe").ToString()
-#     
-#         & $coveralls --opencover -i .\.build\ScanTests.coverage.xml --useRelativePaths --treatUploadErrorsAsWarnings --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_BUILD_NUMBER --serviceName appveyor
-#       }
+
+after_build:
+  - ps: >-
+      if (($env:CONFIGURATION -eq "Release") -and (!$env:APPVEYOR_PULL_REQUEST_NUMBER)) {
+        $coveralls = (Resolve-Path "$Env:APPVEYOR_BUILD_FOLDER/coveralls.net.*/tools/csmacnz.coveralls.exe").ToString()
+    
+        & $coveralls --opencover -i .\.build\ScanTests.coverage.xml --useRelativePaths --treatUploadErrorsAsWarnings --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_BUILD_NUMBER --serviceName appveyor
+      }
 
