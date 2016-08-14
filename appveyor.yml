@@ -9,7 +9,7 @@ environment:
   COVERALLS_REPO_TOKEN:
     secure: 5SUs/dZZLsQc/dTteMFP3jShC8dvDFE3nC74iLe8TisQmyeIfEnYyDBmj2X4BMby
   CoverityProjectToken:
-    secure: gH+sD5xuGlr5opzbGmvJaeOjbzXExI2JudYTb9fj0Ww=
+    secure: 51/iXWjlmat9xqzfCLfZ4Rrry0KwO8AYmOOSFGjRqtI=
   CoverityNotificationEmail:
     secure: DEtCTPnUeMi3DghTZyTDnRu2kamKoLr1YJhcBOTNuDo=
 
