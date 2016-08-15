@@ -52,15 +52,16 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("3bbd7939-e260-4951-a120-82892c5f09db")]
 
-// Version information for an assembly consists of the following four values:
+
+// Version information
+// As fas as possible we use a semver compatible scheme here
+// The major number is only increased if incompatible API changes are introduced.
+// Then and only then the major number in AssemblyVersion shall be increased.
+// Minor, Build and Revision numbers are never touched in AssemblyVersion.
 //
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0%revcount%%shorthash%%dirty%")]
+// Major, Minor and Build number are to be increased equally in both
+// AssemblyFileVersion and AssemblyInformationalVersion
+
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
+[assembly: AssemblyInformationalVersion("0.0.0%revcount%%shorthash%%dirty%")]
