@@ -1,4 +1,4 @@
-﻿// <copyright file="IJetConnection.cs" company="Hottinger Baldwin Messtechnik GmbH">
+﻿// <copyright file="JetPeerException.cs" company="Hottinger Baldwin Messtechnik GmbH">
 //
 // CS Jet, a library to communicate with Jet IPC.
 //
@@ -32,26 +32,11 @@ namespace Hbm.Devices.Jet
 {
     using System;
 
-    public interface IJetConnection
+    public class JetPeerException : Exception
     {
-        event EventHandler<StringEventArgs> HandleIncomingMessage;
-
-        bool IsConnected { get; }
-
-        void Connect(Action<bool> completed, double timeoutMs);
-
-        void Disconnect();
-
-        void SendMessage(string json);
-    }
-
-    public class StringEventArgs : EventArgs
-    {
-        public StringEventArgs(string message)
+        internal JetPeerException(string message)
+            : base(message)
         {
-            this.Message = message;
         }
-
-        public string Message { get; private set; }
     }
 }

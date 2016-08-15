@@ -46,8 +46,6 @@ namespace Hbm.Devices.Jet
         internal const string Remove = "remove";
         internal const string Change = "change";
 
-        internal System.Timers.Timer requestTimer;
-
         private static int requestIdCounter;
         private JObject json;
         private Action<bool, JToken> responseCallback;
@@ -58,7 +56,7 @@ namespace Hbm.Devices.Jet
             this.responseCallback = responseCallback;
             if (responseCallback != null)
             {
-                this.requestTimer = new System.Timers.Timer();
+                this.RequestTimer = new System.Timers.Timer();
                 this.requestId = Interlocked.Increment(ref requestIdCounter);
             }
 
@@ -73,6 +71,8 @@ namespace Hbm.Devices.Jet
 
             this.json = json;
         }
+
+        internal System.Timers.Timer RequestTimer { get; }
 
         internal bool HasResponseCallback()
         {

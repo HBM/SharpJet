@@ -39,19 +39,45 @@ namespace Hbm.Devices.Jet
         private WebSocket webSocket;
         private Action<bool> connectCompleted;
         private Timer connectTimer;
+        private ConnectionState connectionState;
 
         public WebSocketJetConnection(string url)
         {
+            this.connectionState = ConnectionState.closed;
             this.webSocket = new WebSocket(url, "jet");
             this.webSocket.OnOpen += this.OnOpen;
+            this.webSocket.OnClose += this.OnClose;
             this.webSocket.OnError += this.OnError;
             this.webSocket.OnMessage += this.OnMessage;
         }
-        
+
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
+
+        private enum ConnectionState
+        {
+            closed,
+            connected,
+            closing
+        }
+
+        public bool IsConnected
+        {
+            get
+            {
+                return this.connectionState == ConnectionState.connected;
+            }
+        }
 
         public void Connect(Action<bool> completed, double timeoutMs)
         {
+            lock (this)
+            {
+                if (this.IsConnected)
+                {
+                    throw new JetPeerException("Websocket already connected");
+                }
+            }
+
             this.connectCompleted = completed;
             this.connectTimer = new Timer(timeoutMs);
             this.connectTimer.Elapsed += this.OnOpenElapsed;
@@ -60,9 +86,32 @@ namespace Hbm.Devices.Jet
             this.webSocket.ConnectAsync();
         }
 
+        public void Disconnect()
+        {
+            lock (this)
+            {
+                if (!this.IsConnected)
+                {
+                    throw new JetPeerException("disconnecting an already disconnected websocket");
+                }
+
+                this.connectionState = ConnectionState.closing;
+            }
+
+            this.webSocket.CloseAsync(WebSocketSharp.CloseStatusCode.Away);
+        }
+
         public void SendMessage(string json)
         {
-            this.webSocket.Send(json);
+            lock (this)
+            {
+                if (!this.IsConnected)
+                {
+                    throw new JetPeerException("Websocket disconnected");
+                }
+
+                this.webSocket.Send(json);
+            }
         }
 
         public void Dispose()
@@ -75,7 +124,13 @@ namespace Hbm.Devices.Jet
         {
             if (disposing)
             {
-                this.webSocket.Close(WebSocketSharp.CloseStatusCode.Away);
+                lock (this)
+                {
+                    if (this.IsConnected)
+                    {
+                        this.webSocket.Close(WebSocketSharp.CloseStatusCode.Away);
+                    }
+                }
             }
         }
 
@@ -84,11 +139,20 @@ namespace Hbm.Devices.Jet
             lock (this)
             {
                 this.connectTimer.Stop();
+                this.connectionState = ConnectionState.connected;
 
                 if ((this.connectCompleted != null) && this.webSocket.IsAlive)
                 {
                     this.connectCompleted(true);
                 }
+            }
+        }
+
+        private void OnClose(object sender, CloseEventArgs e)
+        {
+            lock (this)
+            {
+                this.connectionState = ConnectionState.closed;
             }
         }
 

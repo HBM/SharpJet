@@ -58,6 +58,11 @@ namespace Hbm.Devices.Jet
             this.connection.Connect(completed, timeoutMs);
         }
 
+        public bool IsConnected()
+        {
+            return this.connection.IsConnected;
+        }
+
         public void Info(Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             JetMethod info = new JetMethod(JetMethod.Info, null, responseCallback);
@@ -169,6 +174,25 @@ namespace Hbm.Devices.Jet
             this.ExecuteMethod(unfetch, responseTimeoutMs);
         }
 
+        private static void RequestTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, JetMethod method)
+        {
+            JetPeer peer = (JetPeer)sender;
+            method.RequestTimer.Stop();
+            int id = method.GetRequestId();
+            lock (peer.openRequests)
+            {
+                if (peer.openRequests.ContainsKey(id))
+                {
+                    method = peer.openRequests[id];
+                    peer.openRequests.Remove(id);
+                    lock (method)
+                    {
+                        method.CallResponseCallback(false, null);
+                    }
+                }
+            }
+        }
+
         private void HandleIncomingJson(object obj, StringEventArgs e)
         {
             JToken json = JToken.Parse(e.Message);
@@ -222,33 +246,14 @@ namespace Hbm.Devices.Jet
                 int id = method.GetRequestId();
                 lock (this.openRequests)
                 {
-                    method.requestTimer.Interval = timeoutMs;
-                    method.requestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
-                    method.requestTimer.Start();
+                    method.RequestTimer.Interval = timeoutMs;
+                    method.RequestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
+                    method.RequestTimer.Start();
                     this.openRequests.Add(id, method);
                 }
             }
 
             this.connection.SendMessage(method.GetJson());
-        }
-
-        private static void RequestTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, JetMethod method)
-        {
-            JetPeer peer = (JetPeer)sender;
-            method.requestTimer.Stop();
-            int id = method.GetRequestId();
-            lock (peer.openRequests)
-            {
-                if (peer.openRequests.ContainsKey(id))
-                {
-                    method = peer.openRequests[id];
-                    peer.openRequests.Remove(id);
-                    lock (method)
-                    {
-                        method.CallResponseCallback(false, null);
-                    }
-                }
-            }
         }
 
         private void RegisterStateCallback(string path, Func<string, JToken, JToken> callback)
@@ -426,7 +431,7 @@ namespace Hbm.Devices.Jet
                     {
                         method = this.openRequests[id];
                         this.openRequests.Remove(id);
-                        method.requestTimer.Stop();
+                        method.RequestTimer.Stop();
                         lock (method)
                         {
                             method.CallResponseCallback(true, json);
