@@ -1,0 +1,59 @@
+configuration:
+  - Debug
+  - Release
+
+cache:
+  - .\packages -> .\**\packages.config
+
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: J+xdwAnjAsiAEWhxncURveCU5+VPV3aZfL+0N+aYB5TY14BYB6P+SEt36kPHW6rC
+  CoverityProjectToken:
+    secure: 51/iXWjlmat9xqzfCLfZ4Rrry0KwO8AYmOOSFGjRqtI=
+  CoverityNotificationEmail:
+    secure: DEtCTPnUeMi3DghTZyTDnRu2kamKoLr1YJhcBOTNuDo=
+
+install:
+  - ps: |
+      if ($Env:APPVEYOR_REPO_BRANCH -eq "coverity_scan") {
+          $Env:path="C:\Program Files (x86)\MSBuild\12.0\Bin;" + $Env:path
+      }
+  
+  - nuget install coveralls.net
+  - nuget install -ExcludeVersion PublishCoverity
+
+before_build:
+  - nuget restore ".\SharpJet.sln"
+
+build_script:
+  - ps: |
+      if (($Env:APPVEYOR_REPO_BRANCH -eq "coverity_scan") -and ($env:CONFIGURATION -eq "Release")) {
+      	cov-build.exe --dir cov-int msbuild "$Env:APPVEYOR_BUILD_FOLDER\build.xml" "/p:Configuration=$Env:CONFIGURATION" /t:Coverage /verbosity:minimal
+        "Compressing Coverity results..."
+        & PublishCoverity\tools\PublishCoverity.exe compress `
+        --nologo `
+        -i "$env:APPVEYOR_BUILD_FOLDER\cov-int" `
+        -o "$env:APPVEYOR_BUILD_FOLDER\coverity.zip" `
+        --overwrite
+          
+         "Uploading Coverity results..."  
+        & PublishCoverity\tools\PublishCoverity.exe publish `
+        --nologo `
+        -t "$env:CoverityProjectToken" `
+        -e "$env:CoverityNotificationEmail" `
+        -r "gatzka/SharpJet" `
+        -z "coverity.zip" `
+        -d "Appveyor build." `
+        --codeVersion "$env:APPVEYOR_BUILD_VERSION"
+      } else {
+      	msbuild "$Env:APPVEYOR_BUILD_FOLDER\build.xml" "/p:Configuration=$Env:CONFIGURATION" /t:Coverage /verbosity:minimal
+      }
+
+after_build:
+  - ps: >-
+      if (($env:CONFIGURATION -eq "Release") -and (!$env:APPVEYOR_PULL_REQUEST_NUMBER)) {
+        $coveralls = (Resolve-Path "$Env:APPVEYOR_BUILD_FOLDER/coveralls.net.*/tools/csmacnz.coveralls.exe").ToString()
+    
+        & $coveralls --opencover -i .\.build\SharpJetTests.coverage.xml --useRelativePaths --treatUploadErrorsAsWarnings --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_BUILD_NUMBER --serviceName appveyor
+      }
+
