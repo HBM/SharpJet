@@ -33,13 +33,13 @@ using System.Threading;
 using Hbm.Devices.Jet;
 using Newtonsoft.Json.Linq;
 
-namespace JetExample
+namespace JetExamples
 {
-    class JetExample
+    class JetState
     {
         static void Main(string[] args)
         {
-            var example = new JetExample();
+            var example = new JetState();
             Console.ReadKey(true);
         }
 
@@ -47,7 +47,7 @@ namespace JetExample
         private const string stateName = "theState";
         private int counter;
 
-        JetExample()
+        JetState()
         {
             //var connection = new WebSocketJetConnection("wss://172.19.1.1");
             var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");

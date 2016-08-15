@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JetExample.cs" />
+    <Compile Include="JetState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -53,7 +53,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpJet\SharpJet.csproj">
+    <ProjectReference Include="..\..\SharpJet\SharpJet.csproj">
       <Project>{8e017e78-e6ed-4e30-8b5d-1bdbe2a7cbe8}</Project>
       <Name>SharpJet</Name>
     </ProjectReference>
