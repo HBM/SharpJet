@@ -36,8 +36,6 @@ namespace Hbm.Devices.Jet
     {
         event EventHandler<StringEventArgs> HandleIncomingMessage;
 
-        bool IsConnected { get; }
-
         void Connect(Action<bool> completed, double timeoutMs);
 
         void Disconnect();

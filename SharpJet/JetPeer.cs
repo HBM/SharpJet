@@ -58,11 +58,6 @@ namespace Hbm.Devices.Jet
             this.connection.Connect(completed, timeoutMs);
         }
 
-        public bool IsConnected()
-        {
-            return this.connection.IsConnected;
-        }
-
         public void Info(Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             JetMethod info = new JetMethod(JetMethod.Info, null, responseCallback);

@@ -66,5 +66,9 @@ namespace Hbm.Devices.Jet
         public void SendMessage(string json)
         {
         }
+
+        public void Disconnect()
+        {
+        }
     }
 }
