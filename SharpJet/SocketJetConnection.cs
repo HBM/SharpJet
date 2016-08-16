@@ -215,14 +215,12 @@ namespace Hbm.Devices.Jet
         {
             int bytesRead = this.client.EndReceive(ar);
             this.enoughDataInBuffer = true;
-            if (bytesRead == 0)
+            if (bytesRead <= 0 )
             {
-                // close
-                Console.WriteLine("socket closed");
-            }
-            else if (bytesRead < 0)
-            {
-                Console.WriteLine("Socket error");
+                this.client.Disconnect(false);
+                this.client.Close();
+                this.connectionState = ConnectionState.closed;
+                return;
             }
             else
             {
