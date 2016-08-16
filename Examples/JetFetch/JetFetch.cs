@@ -44,8 +44,8 @@ namespace JetExamples
         }
 
         private JetPeer peer;
-        private const string stateName = "theState";
-        private int counter;
+        private FetchId fetchId;
+        private Timer timer;
 
         JetFetch()
         {
@@ -61,7 +61,7 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 Matcher matcher = new Matcher();
-                peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                fetchId = peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
             }
             else
             {
@@ -71,16 +71,43 @@ namespace JetExamples
 
         private void FetchResponseCallback(bool completed, JToken response)
         {
-            JToken result = response["result"];
-            if ((result != null) && (result.Type == JTokenType.Boolean) && (result.Value<bool>() == true))
+            if (completed && IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully fetched!");
+                timer = new Timer(this.Elapsed, null, 5000, 0);
             }
             else
             {
                 Console.WriteLine("fetching states failed!");
                 Console.WriteLine(response);
             }
+        }
+
+        private void Elapsed(Object stateInfo)
+        {
+            if (fetchId != null)
+            {
+                peer.Unfetch(fetchId, UnfetchResponseCallback, 5000);
+            }
+        }
+
+        private void UnfetchResponseCallback(bool completed, JToken response)
+        {
+            if (completed && IsSuccessResponse(response))
+            {
+                Console.WriteLine("States successfully unfetched!");
+            }
+            else
+            {
+                Console.WriteLine("unfetching states failed!");
+                Console.WriteLine(response);
+            }
+        }
+
+        private bool IsSuccessResponse(JToken response)
+        {
+            JToken result = response["result"];
+            return ((result != null) && (result.Type == JTokenType.Boolean) && (result.Value<bool>() == true));
         }
 
         private void FetchCallback(JToken fetchEvent)
