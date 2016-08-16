@@ -151,7 +151,12 @@ namespace Hbm.Devices.Jet
             this.RegisterFetcher(fetchId, fetcher);
 
             JObject parameters = new JObject();
-            parameters["path"] = this.FillPath(matcher);
+            JObject path = this.FillPath(matcher);
+            if (path != null)
+            {
+                parameters["path"] = path;
+            }
+
             parameters["caseInsensitive"] = matcher.CaseInsensitive;
             parameters["id"] = fetchId;
             JetMethod fetch = new JetMethod(JetMethod.Fetch, parameters, responseCallback);
@@ -398,8 +403,15 @@ namespace Hbm.Devices.Jet
             {
                 path["equalsNot"] = matcher.EqualsNotTo;
             }
-
-            return path;
+            
+            if (path.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return path;
+            }
         }
 
         private bool IsResponse(JObject json)
