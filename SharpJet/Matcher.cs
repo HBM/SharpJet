@@ -30,11 +30,16 @@
 
 namespace Hbm.Devices.Jet
 {
+    /// <summary>
+    /// This class holds the properties required to fill a path matcher.
+    /// </summary>
     public class Matcher
     {
         public string Contains { get; set; }
 
-        public string CtartsWith { get; set; }
+        public string[] ContainsAllOf { get; set; }
+
+        public string StartsWith { get; set; }
 
         public string EndsWith { get; set; }
 

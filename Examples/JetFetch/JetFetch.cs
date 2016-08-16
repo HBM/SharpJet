@@ -61,6 +61,7 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 Matcher matcher = new Matcher();
+                matcher.ContainsAllOf = new string[] { "theState", "foo", "bar"};
                 fetchId = peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
             }
             else
@@ -80,6 +81,7 @@ namespace JetExamples
             {
                 Console.WriteLine("fetching states failed!");
                 Console.WriteLine(response);
+                peer.Disconnect();
             }
         }
 
@@ -102,6 +104,7 @@ namespace JetExamples
                 Console.WriteLine("unfetching states failed!");
                 Console.WriteLine(response);
             }
+            peer.Disconnect();
         }
 
         private bool IsSuccessResponse(JToken response)

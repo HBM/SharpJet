@@ -389,9 +389,9 @@ namespace Hbm.Devices.Jet
                 path["contains"] = matcher.Contains;
             }
 
-            if (!string.IsNullOrEmpty(matcher.CtartsWith))
+            if (!string.IsNullOrEmpty(matcher.StartsWith))
             {
-                path["startsWith"] = matcher.CtartsWith;
+                path["startsWith"] = matcher.StartsWith;
             }
 
             if (!string.IsNullOrEmpty(matcher.EndsWith))
@@ -407,6 +407,11 @@ namespace Hbm.Devices.Jet
             if (!string.IsNullOrEmpty(matcher.EqualsNotTo))
             {
                 path["equalsNot"] = matcher.EqualsNotTo;
+            }
+
+            if ((matcher.ContainsAllOf != null) && matcher.ContainsAllOf.Length > 0)
+            {
+                path["containsAllOf"] = JToken.FromObject(matcher.ContainsAllOf);
             }
             
             if (path.Count == 0)
