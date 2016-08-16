@@ -1,6 +1,6 @@
 ﻿// <copyright file="JetState.cs" company="Hottinger Baldwin Messtechnik GmbH">
 //
-// CS Jet, a library to communicate with Jet IPC.
+// SharpJet, a library to communicate with Jet IPC.
 //
 // The MIT License (MIT)
 //
