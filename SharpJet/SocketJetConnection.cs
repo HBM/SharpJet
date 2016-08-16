@@ -185,12 +185,12 @@ namespace Hbm.Devices.Jet
                 try
                 {
                     this.client.EndDisconnect(ar);
-                    this.connectionState = ConnectionState.closed;
                     this.client.Close();
                 }
                 catch (SocketException)
                 {
                 }
+                this.connectionState = ConnectionState.closed;
             }
         }
 
