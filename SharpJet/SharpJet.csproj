@@ -59,6 +59,9 @@
     <Compile Include="JetMethod.cs" />
     <Compile Include="JetPeer.cs" />
     <Compile Include="Matcher.cs" />
+    <Compile Include="SocketJetConnection.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="WebSocketJetConnection.cs" />
   </ItemGroup>
   <ItemGroup>

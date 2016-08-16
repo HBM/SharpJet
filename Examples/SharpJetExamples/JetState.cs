@@ -28,13 +28,14 @@
 //
 // </copyright>
 
-using System;
-using System.Threading;
-using Hbm.Devices.Jet;
-using Newtonsoft.Json.Linq;
-
 namespace JetExamples
 {
+    using System;
+    using System.Net;
+    using System.Threading;
+    using Hbm.Devices.Jet;
+    using Newtonsoft.Json.Linq;
+
     class JetState
     {
         static void Main(string[] args)
@@ -50,7 +51,10 @@ namespace JetExamples
         JetState()
         {
             //var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            IPAddress[] ips;
+            ips = Dns.GetHostAddresses("172.19.1.1");
+            var connection = new SocketJetConnection(ips[0], 11122);
             peer = new JetPeer(connection);
             peer.Connect(OnConnect, 5000);
         }
@@ -95,6 +99,7 @@ namespace JetExamples
             else
             {
                 peer.Remove(stateName, RemoveStateCallback, 5000);
+                peer.Disconnect();
             }
         }
 
