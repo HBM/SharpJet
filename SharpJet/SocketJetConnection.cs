@@ -248,7 +248,7 @@ namespace Hbm.Devices.Jet
                         }
                         else
                         {
-                            enoughDataInBuffer = false;
+                            this.enoughDataInBuffer = false;
                         }
 
                         break;
@@ -279,7 +279,7 @@ namespace Hbm.Devices.Jet
                         }
                         else
                         {
-                            enoughDataInBuffer = false;
+                            this.enoughDataInBuffer = false;
                         }
 
                         break;
