@@ -251,9 +251,12 @@ namespace Hbm.Devices.Jet
                 int id = method.GetRequestId();
                 lock (this.openRequests)
                 {
-                    method.RequestTimer.Interval = timeoutMs;
-                    method.RequestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
-                    method.RequestTimer.Start();
+                    if (timeoutMs > 0.0)
+                    {
+                        method.RequestTimer.Interval = timeoutMs;
+                        method.RequestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
+                        method.RequestTimer.Start();
+                    }
                     this.openRequests.Add(id, method);
                 }
             }
@@ -339,10 +342,15 @@ namespace Hbm.Devices.Jet
                 return;
             }
 
-            JToken newValue = callback(method, json["params"]["value"]);
+            JToken value = json["params"]["value"];
+            JToken newValue = callback(method, value);
             if (newValue != null)
             {
                 this.Change(method, newValue, null, 0);
+            }
+            else
+            {
+                this.Change(method, value, null, 0);
             }
 
             result["result"] = true;
