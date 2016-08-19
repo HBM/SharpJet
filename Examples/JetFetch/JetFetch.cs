@@ -28,31 +28,31 @@
 //
 // </copyright>
 
-using System;
-using System.Threading;
-using Hbm.Devices.Jet;
-using Newtonsoft.Json.Linq;
-
 namespace JetExamples
 {
-    class JetFetch
-    {
-        static void Main(string[] args)
-        {
-            var example = new JetFetch();
-            Console.ReadKey(true);
-        }
+    using System;
+    using System.Threading;
+    using Hbm.Devices.Jet;
+    using Newtonsoft.Json.Linq;
 
+    public class JetFetch
+    {
         private JetPeer peer;
         private FetchId fetchId;
         private Timer timer;
 
-        JetFetch()
+        private JetFetch()
         {
-            //var connection = new WebSocketJetConnection("wss://172.19.1.1");
+            // var connection = new WebSocketJetConnection("wss://172.19.1.1");
             var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
-            peer = new JetPeer(connection);
-            peer.Connect(this.OnConnect, 5000);
+            this.peer = new JetPeer(connection);
+            this.peer.Connect(this.OnConnect, 5000);
+        }
+
+        public static void Main(string[] args)
+        {
+            var example = new JetFetch();
+            Console.ReadKey(true);
         }
 
         private void OnConnect(bool completed)
@@ -61,8 +61,8 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 Matcher matcher = new Matcher();
-                matcher.ContainsAllOf = new string[] { "theState", "foo", "bar"};
-                fetchId = peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                matcher.ContainsAllOf = new string[] { "theState", "foo", "bar" };
+                this.fetchId = this.peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
             }
             else
             {
@@ -72,30 +72,30 @@ namespace JetExamples
 
         private void FetchResponseCallback(bool completed, JToken response)
         {
-            if (completed && IsSuccessResponse(response))
+            if (completed && this.IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully fetched!");
-                timer = new Timer(this.Elapsed, null, 5000, 0);
+                this.timer = new Timer(this.Elapsed, null, 5000, 0);
             }
             else
             {
                 Console.WriteLine("fetching states failed!");
                 Console.WriteLine(response);
-                peer.Disconnect();
+                this.peer.Disconnect();
             }
         }
 
-        private void Elapsed(Object stateInfo)
+        private void Elapsed(object stateInfo)
         {
-            if (fetchId != null)
+            if (this.fetchId != null)
             {
-                peer.Unfetch(fetchId, UnfetchResponseCallback, 5000);
+                this.peer.Unfetch(this.fetchId, this.UnfetchResponseCallback, 5000);
             }
         }
 
         private void UnfetchResponseCallback(bool completed, JToken response)
         {
-            if (completed && IsSuccessResponse(response))
+            if (completed && this.IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully unfetched!");
             }
@@ -104,7 +104,8 @@ namespace JetExamples
                 Console.WriteLine("unfetching states failed!");
                 Console.WriteLine(response);
             }
-            peer.Disconnect();
+
+            this.peer.Disconnect();
         }
 
         private bool IsSuccessResponse(JToken response)

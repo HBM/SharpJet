@@ -52,7 +52,6 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("3bbd7939-e260-4951-a120-82892c5f09db")]
 
-
 // Version information
 // As fas as possible we use a semver compatible scheme here
 // The major number is only increased if incompatible API changes are introduced.

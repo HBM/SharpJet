@@ -36,27 +36,27 @@ namespace JetExamples
     using Hbm.Devices.Jet;
     using Newtonsoft.Json.Linq;
 
-    class JetState
+    public class JetState
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var example = new JetState();
             Console.ReadKey(true);
         }
 
+        private const string StateName = "theState";
         private JetPeer peer;
-        private const string stateName = "theState";
         private int counter;
 
-        JetState()
+        private JetState()
         {
-            //var connection = new WebSocketJetConnection("wss://172.19.1.1");
+            // var connection = new WebSocketJetConnection("wss://172.19.1.1");
             // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
             IPAddress[] ips;
             ips = Dns.GetHostAddresses("172.19.1.1");
             var connection = new SocketJetConnection(ips[0], 11122);
-            peer = new JetPeer(connection);
-            peer.Connect(OnConnect, 5000);
+            this.peer = new JetPeer(connection);
+            this.peer.Connect(this.OnConnect, 5000);
         }
 
         private void OnConnect(bool completed)
@@ -65,7 +65,7 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 JValue stateValue = new JValue(12);
-                peer.Add(stateName, stateValue, StateCallback, AddResponseCallback, 5000);
+                this.peer.Add(StateName, stateValue, this.StateCallback, this.AddResponseCallback, 5000);
             }
             else
             {
@@ -80,32 +80,32 @@ namespace JetExamples
 
         private void AddResponseCallback(bool completed, JToken response)
         {
-            Console.WriteLine("State \"" + stateName + "\" successfully added!");
-            counter = 0;
-            var val = new JValue(counter);
-            peer.Change(stateName, val, ChangeResponseCallback, 5000);
+            Console.WriteLine("State \"" + StateName + "\" successfully added!");
+            this.counter = 0;
+            var val = new JValue(this.counter);
+            this.peer.Change(StateName, val, this.ChangeResponseCallback, 5000);
         }
 
         private void ChangeResponseCallback(bool completed, JToken response)
         {
             Console.WriteLine(response);
-            counter++;
-            if (counter < 10)
+            this.counter++;
+            if (this.counter < 10)
             {
                 Thread.Sleep(1000);
-                JValue val = new JValue(counter);
-                peer.Change(stateName, val, ChangeResponseCallback, 5000);
+                JValue val = new JValue(this.counter);
+                this.peer.Change(StateName, val, this.ChangeResponseCallback, 5000);
             }
             else
             {
-                peer.Remove(stateName, RemoveStateCallback, 5000);
-                peer.Disconnect();
+                this.peer.Remove(StateName, this.RemoveStateCallback, 5000);
+                this.peer.Disconnect();
             }
         }
 
         private void RemoveStateCallback(bool completed, JToken response)
         {
-            Console.WriteLine("State \"" + stateName + "\" successfully removed!");
+            Console.WriteLine("State \"" + StateName + "\" successfully removed!");
         }
     }
 }

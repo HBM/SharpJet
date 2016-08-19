@@ -190,6 +190,7 @@ namespace Hbm.Devices.Jet
                 catch (SocketException)
                 {
                 }
+
                 this.connectionState = ConnectionState.closed;
             }
         }
@@ -215,7 +216,7 @@ namespace Hbm.Devices.Jet
         {
             int bytesRead = this.client.EndReceive(ar);
             this.enoughDataInBuffer = true;
-            if (bytesRead <= 0 )
+            if (bytesRead <= 0)
             {
                 this.client.Disconnect(false);
                 this.client.Close();

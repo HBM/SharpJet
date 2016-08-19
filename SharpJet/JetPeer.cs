@@ -182,10 +182,11 @@ namespace Hbm.Devices.Jet
         private static void RequestTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, JetMethod method)
         {
             JetPeer peer = (JetPeer)sender;
-            method.RequestTimer.Stop();
-            int id = method.GetRequestId();
             lock (peer.openRequests)
             {
+                method.RequestTimer.Stop();
+                int id = method.GetRequestId();
+
                 if (peer.openRequests.ContainsKey(id))
                 {
                     method = peer.openRequests[id];
@@ -257,6 +258,7 @@ namespace Hbm.Devices.Jet
                         method.RequestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
                         method.RequestTimer.Start();
                     }
+
                     this.openRequests.Add(id, method);
                 }
             }
@@ -313,14 +315,14 @@ namespace Hbm.Devices.Jet
             JToken methodToken = json["method"];
             if (methodToken == null)
             {
-                SendError(json, -32601, "no method given");
+                this.SendError(json, -32601, "no method given");
                 return;
             }
 
             string method = methodToken.ToObject<string>();
             if ((method == null) || (method.Length == 0))
             {
-                SendError(json, -32601, "method is not a string or emtpy");
+                this.SendError(json, -32601, "method is not a string or emtpy");
                 return;
             }
 
@@ -332,21 +334,21 @@ namespace Hbm.Devices.Jet
 
             if (callback == null)
             {
-                SendError(json, -32000, "state is read-only");
+                this.SendError(json, -32000, "state is read-only");
                 return;
             }
 
             JToken parameters = json["params"];
             if (parameters == null)
             {
-                SendError(json, -32601, "no parameters in JSON");
+                this.SendError(json, -32601, "no parameters in JSON");
                 return;
             }
 
             JToken value = json["params"]["value"];
             if (value == null)
             {
-                SendError(json, -32601, "no value in JSON");
+                this.SendError(json, -32601, "no value in JSON");
                 return;
             }
 

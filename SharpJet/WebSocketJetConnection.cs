@@ -141,7 +141,7 @@ namespace Hbm.Devices.Jet
                 this.connectTimer.Stop();
                 this.connectionState = ConnectionState.connected;
 
-                if ((this.connectCompleted != null))
+                if (this.connectCompleted != null)
                 {
                     this.connectCompleted(this.webSocket.IsAlive);
                 }

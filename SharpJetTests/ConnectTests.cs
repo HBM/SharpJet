@@ -30,8 +30,8 @@
 
 namespace Hbm.Devices.Jet
 {
-    using NUnit.Framework;
     using System.Collections;
+    using NUnit.Framework;
 
     public class ConnectTests
     {
@@ -58,7 +58,7 @@ namespace Hbm.Devices.Jet
         {
             var connection = new TestJetConnection(behaviour);
             var peer = new JetPeer(connection);
-            peer.Connect(OnConnect, 1);
+            peer.Connect(this.OnConnect, 1);
             Assert.AreEqual(this.connectCallbackCalled, true);
             return this.connectCompleted;
         }
