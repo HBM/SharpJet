@@ -98,16 +98,16 @@ namespace Hbm.Devices.Jet
                 {
                     throw new JetPeerException("Websocket already connected");
                 }
-            }
 
-            this.connectCompleted = completed;
-            IPEndPoint remoteEP = new IPEndPoint(this.address, this.port);
-            this.client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            this.connectTimer = new Timer(timeoutMs);
-            this.connectTimer.Elapsed += this.OnOpenElapsed;
-            this.connectTimer.AutoReset = false;
-            this.connectTimer.Enabled = true;
-            this.client.BeginConnect(remoteEP, new AsyncCallback(this.ConnectCallback), null);
+                this.connectCompleted = completed;
+                IPEndPoint remoteEP = new IPEndPoint(this.address, this.port);
+                this.client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                this.connectTimer = new Timer(timeoutMs);
+                this.connectTimer.Elapsed += this.OnOpenElapsed;
+                this.connectTimer.AutoReset = false;
+                this.connectTimer.Enabled = true;
+                this.client.BeginConnect(remoteEP, new AsyncCallback(this.ConnectCallback), null);
+            }
         }
 
         public void Disconnect()
@@ -120,9 +120,8 @@ namespace Hbm.Devices.Jet
                 }
 
                 this.connectionState = ConnectionState.closing;
+                this.client.BeginDisconnect(false, this.DisconnectCallback, null);
             }
-
-            this.client.BeginDisconnect(false, this.DisconnectCallback, null);
         }
 
         public void SendMessage(string json)
