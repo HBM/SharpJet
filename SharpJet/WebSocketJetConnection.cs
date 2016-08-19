@@ -76,14 +76,14 @@ namespace Hbm.Devices.Jet
                 {
                     throw new JetPeerException("Websocket already connected");
                 }
-            }
 
-            this.connectCompleted = completed;
-            this.connectTimer = new Timer(timeoutMs);
-            this.connectTimer.Elapsed += this.OnOpenElapsed;
-            this.connectTimer.AutoReset = false;
-            this.connectTimer.Enabled = true;
-            this.webSocket.ConnectAsync();
+                this.connectCompleted = completed;
+                this.connectTimer = new Timer(timeoutMs);
+                this.connectTimer.Elapsed += this.OnOpenElapsed;
+                this.connectTimer.AutoReset = false;
+                this.connectTimer.Enabled = true;
+                this.webSocket.ConnectAsync();
+            }
         }
 
         public void Disconnect()
