@@ -189,6 +189,9 @@ namespace Hbm.Devices.Jet
                 catch (SocketException)
                 {
                 }
+                catch (ObjectDisposedException)
+                {
+                }
 
                 this.connectionState = ConnectionState.closed;
             }
