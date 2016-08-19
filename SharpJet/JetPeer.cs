@@ -345,7 +345,7 @@ namespace Hbm.Devices.Jet
                 return;
             }
 
-            JToken value = json["params"]["value"];
+            JToken value = parameters["value"];
             if (value == null)
             {
                 this.SendError(json, -32601, "no value in JSON");
@@ -370,8 +370,10 @@ namespace Hbm.Devices.Jet
         private void SendError(JToken incomingJson, int errorCode, string message)
         {
             JObject result = new JObject();
-            result["error"]["code"] = errorCode;
-            result["error"]["message"] = message;
+            JObject error = new JObject();
+            error["code"] = errorCode;
+            error["message"] = message;
+            result["error"] = error;
             this.SendResponse(incomingJson, result);
             return;
         }
@@ -400,9 +402,13 @@ namespace Hbm.Devices.Jet
             if (fetcher != null)
             {
                 JToken parameters = json["params"];
-                if (parameters.Type != JTokenType.Null)
+                if ((parameters != null) && (parameters.Type != JTokenType.Null))
                 {
                     fetcher.CallFetchCallback(parameters);
+                }
+                else
+                {
+                    // Todo: Log error
                 }
             }
         }
