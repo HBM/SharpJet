@@ -50,13 +50,14 @@ namespace Hbm.Devices.Jet
         private JObject json;
         private Action<bool, JToken> responseCallback;
         private int requestId;
+        private System.Timers.Timer requestTimer;
 
         internal JetMethod(string method, JObject parameters, Action<bool, JToken> responseCallback)
         {
             this.responseCallback = responseCallback;
             if (responseCallback != null)
             {
-                this.RequestTimer = new System.Timers.Timer();
+                this.requestTimer = new System.Timers.Timer();
                 this.requestId = Interlocked.Increment(ref requestIdCounter);
             }
 
@@ -72,7 +73,13 @@ namespace Hbm.Devices.Jet
             this.json = json;
         }
 
-        internal System.Timers.Timer RequestTimer { get; }
+        internal System.Timers.Timer RequestTimer
+        {
+            get
+            {
+                return requestTimer;
+            }
+        }
 
         internal bool HasResponseCallback()
         {
