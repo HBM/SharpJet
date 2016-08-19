@@ -311,59 +311,61 @@ namespace Hbm.Devices.Jet
 
         private void HandleStateOrMethodCallbacks(JToken json)
         {
-            JObject result = new JObject();
-            JToken methodToken = json["method"];
-            if (methodToken == null)
+            try
             {
-                this.SendError(json, -32601, "no method given");
-                return;
-            }
+                JObject result = new JObject();
+                JToken methodToken = json["method"];
+                if (methodToken == null)
+                {
+                    throw new JsonRpcException(JsonRpcException.MethodNotFound, "no method given");
+                }
 
-            string method = methodToken.ToObject<string>();
-            if ((method == null) || (method.Length == 0))
-            {
-                this.SendError(json, -32601, "method is not a string or emtpy");
-                return;
-            }
+                string method = methodToken.ToObject<string>();
+                if ((method == null) || (method.Length == 0))
+                {
+                    throw new JsonRpcException(JsonRpcException.MethodNotFound, "method is not a string or emtpy");
+                }
 
-            Func<string, JToken, JToken> callback = null;
-            lock (this.stateCallbacks)
-            {
-                callback = this.stateCallbacks[method];
-            }
+                Func<string, JToken, JToken> callback = null;
+                lock (this.stateCallbacks)
+                {
+                    callback = this.stateCallbacks[method];
+                }
 
-            if (callback == null)
-            {
-                this.SendError(json, -32000, "state is read-only");
-                return;
-            }
+                if (callback == null)
+                {
+                    throw new JsonRpcException(JsonRpcException.InvalidRequest, "state is read-only");
+                }
 
-            JToken parameters = json["params"];
-            if (parameters == null)
-            {
-                this.SendError(json, -32601, "no parameters in JSON");
-                return;
-            }
+                JToken parameters = json["params"];
+                if (parameters == null)
+                {
+                    throw new JsonRpcException(JsonRpcException.InvalidParams, "no parameters in Json");
+                }
 
-            JToken value = parameters["value"];
-            if (value == null)
-            {
-                this.SendError(json, -32601, "no value in JSON");
-                return;
-            }
+                JToken value = parameters["value"];
+                if (value == null)
+                {
+                    throw new JsonRpcException(JsonRpcException.InvalidParams, "no value in parameter sub-object in Json");
+                }
 
-            JToken newValue = callback(method, value);
-            if (newValue != null)
-            {
-                this.Change(method, newValue, null, 0);
-            }
-            else
-            {
-                this.Change(method, value, null, 0);
-            }
+                JToken newValue = callback(method, value);
+                if (newValue != null)
+                {
+                    this.Change(method, newValue, null, 0);
+                }
+                else
+                {
+                    this.Change(method, value, null, 0);
+                }
 
-            result["result"] = true;
-            this.SendResponse(json, result);
+                result["result"] = true;
+                this.SendResponse(json, result);
+            }
+            catch (JsonRpcException e)
+            {
+                this.SendResponse(json, e.GetJson());
+            }
             return;
         }
 
