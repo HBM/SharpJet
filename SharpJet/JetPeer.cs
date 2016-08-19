@@ -69,7 +69,29 @@ namespace Hbm.Devices.Jet
             this.ExecuteMethod(info, responseTimeoutMs);
         }
 
-        public void Add(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        /// <summary>
+        /// Adds a state to a Jet daemon.
+        /// </summary>
+        /// <param name="path">The path under which the state will be reachable.</param>
+        /// <param name="value">The initial value of the state to be added.</param>
+        /// <param name="stateCallback">
+        /// <para>The callback method that will be called if somebody calls a "Set" on the state to be added.</para>
+        /// <para>If this parameter is null, the state is registered read-only (cannot be changed via "Set") aon the Jet daemon.</para>
+        /// <para>
+        /// The callback method must conform to the following prototype JToken callback(string path, JToken value).
+        /// "path" is the path under which the state was registered. This might be useful to use a single callback method for several
+        /// states and multiplex via "path".
+        /// </para>
+        /// <para>
+        /// "value" contains the new value that should be set.
+        /// If "value" is accepted without adapting, callback must return null.
+        /// If "value" is accepted but adapted to a different value, the adapted value must be returned by callback.
+        /// If callback can't accept the value to be set, it must throw a <see cref="JsonRpcException"/>.
+        /// </para>
+        /// </param>
+        /// <param name="responseCallback">A callback method that will be called if this method succeeds or fails.</param>
+        /// <param name="responseTimeoutMilliseconds">The timeout how long the operation might take before failing.</param>
+        public void Add(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<bool, JToken> responseCallback, double responseTimeoutMilliseconds)
         {
             if (path == null)
             {
@@ -320,8 +342,8 @@ namespace Hbm.Devices.Jet
                     throw new JsonRpcException(JsonRpcException.MethodNotFound, "no method given");
                 }
 
-                string method = methodToken.ToObject<string>();
-                if ((method == null) || (method.Length == 0))
+                string jetPath = methodToken.ToObject<string>();
+                if ((jetPath == null) || (jetPath.Length == 0))
                 {
                     throw new JsonRpcException(JsonRpcException.MethodNotFound, "method is not a string or emtpy");
                 }
@@ -329,7 +351,7 @@ namespace Hbm.Devices.Jet
                 Func<string, JToken, JToken> callback = null;
                 lock (this.stateCallbacks)
                 {
-                    callback = this.stateCallbacks[method];
+                    callback = this.stateCallbacks[jetPath];
                 }
 
                 if (callback == null)
@@ -349,14 +371,14 @@ namespace Hbm.Devices.Jet
                     throw new JsonRpcException(JsonRpcException.InvalidParams, "no value in parameter sub-object in Json");
                 }
 
-                JToken newValue = callback(method, value);
+                JToken newValue = callback(jetPath, value);
                 if (newValue != null)
                 {
-                    this.Change(method, newValue, null, 0);
+                    this.Change(jetPath, newValue, null, 0);
                 }
                 else
                 {
-                    this.Change(method, value, null, 0);
+                    this.Change(jetPath, value, null, 0);
                 }
 
                 result["result"] = true;
@@ -366,6 +388,7 @@ namespace Hbm.Devices.Jet
             {
                 this.SendResponse(json, e.GetJson());
             }
+
             return;
         }
 
