@@ -96,9 +96,8 @@ namespace Hbm.Devices.Jet
                 }
 
                 this.connectionState = ConnectionState.closing;
+                this.webSocket.CloseAsync(WebSocketSharp.CloseStatusCode.Away);
             }
-
-            this.webSocket.CloseAsync(WebSocketSharp.CloseStatusCode.Away);
         }
 
         public void SendMessage(string json)
