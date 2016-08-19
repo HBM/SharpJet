@@ -313,18 +313,14 @@ namespace Hbm.Devices.Jet
             JToken methodToken = json["method"];
             if (methodToken == null)
             {
-                result["error"]["code"] = -32601;
-                result["error"]["message"] = "No method given!";
-                this.SendResponse(json, result);
+                SendError(json, -32601, "no method given");
                 return;
             }
 
             string method = methodToken.ToObject<string>();
             if ((method == null) || (method.Length == 0))
             {
-                result["error"]["code"] = -32601;
-                result["error"]["message"] = "Method is not a string or empty!";
-                this.SendResponse(json, result);
+                SendError(json, -32601, "method is not a string or emtpy");
                 return;
             }
 
@@ -336,13 +332,24 @@ namespace Hbm.Devices.Jet
 
             if (callback == null)
             {
-                result["error"]["code"] = -32000;
-                result["error"]["message"] = "State is read-only!";
-                this.SendResponse(json, result);
+                SendError(json, -32000, "state is read-only");
+                return;
+            }
+
+            JToken parameters = json["params"];
+            if (parameters == null)
+            {
+                SendError(json, -32601, "no parameters in JSON");
                 return;
             }
 
             JToken value = json["params"]["value"];
+            if (value == null)
+            {
+                SendError(json, -32601, "no value in JSON");
+                return;
+            }
+
             JToken newValue = callback(method, value);
             if (newValue != null)
             {
@@ -355,6 +362,15 @@ namespace Hbm.Devices.Jet
 
             result["result"] = true;
             this.SendResponse(json, result);
+            return;
+        }
+
+        private void SendError(JToken incomingJson, int errorCode, string message)
+        {
+            JObject result = new JObject();
+            result["error"]["code"] = errorCode;
+            result["error"]["message"] = message;
+            this.SendResponse(incomingJson, result);
             return;
         }
 
