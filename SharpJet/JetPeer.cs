@@ -108,7 +108,7 @@ namespace Hbm.Devices.Jet
 
             this.RegisterStateCallback(path, stateCallback);
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
-            this.ExecuteMethod(add, responseTimeoutMs);
+            this.ExecuteMethod(add, responseTimeoutMilliseconds);
         }
 
         public void Remove(string path, Action<bool, JToken> responseCallback, double responseTimeoutMs)
