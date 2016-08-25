@@ -44,7 +44,7 @@ namespace Hbm.Devices.Jet
         READ_MESSAGE
     }
 
-    public class SocketJetConnection : IJetConnection
+    public class SocketJetConnection : IJetConnection, IDisposable
     {
         private static readonly int ReceivebufferSize = 20000;
         private byte[] receiveBuffer = new byte[ReceivebufferSize];
@@ -144,6 +144,27 @@ namespace Hbm.Devices.Jet
             this.client.SendAsync(buf);
         }
 
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                lock (this)
+                {
+                    if (this.IsConnected)
+                    {
+                        this.client.Close();
+                        this.connectionState = ConnectionState.closed;
+                    }
+                }
+            }
+        }
+
         private int DataInBuffer()
         {
             return this.currentWriteIndex - this.currentReadIndex;
@@ -222,10 +243,13 @@ namespace Hbm.Devices.Jet
                 this.enoughDataInBuffer = true;
                 if (bytesRead <= 0)
                 {
-                    this.client.Disconnect(false);
-                    this.client.Close();
-                    this.connectionState = ConnectionState.closed;
-                    return;
+                    lock (this)
+                    {
+                        this.client.Disconnect(false);
+                        this.client.Close();
+                        this.connectionState = ConnectionState.closed;
+                        return;
+                    }
                 }
                 else
                 {
