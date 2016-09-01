@@ -44,7 +44,7 @@ namespace Hbm.Devices.Jet
         READ_MESSAGE
     }
 
-    public class SocketJetConnection : IJetConnection
+    public class SocketJetConnection : IJetConnection, IDisposable
     {
         private static readonly int ReceivebufferSize = 20000;
         private byte[] receiveBuffer = new byte[ReceivebufferSize];
@@ -144,6 +144,27 @@ namespace Hbm.Devices.Jet
             this.client.SendAsync(buf);
         }
 
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                lock (this)
+                {
+                    if (this.IsConnected)
+                    {
+                        this.client.Close();
+                        this.connectionState = ConnectionState.closed;
+                    }
+                }
+            }
+        }
+
         private int DataInBuffer()
         {
             return this.currentWriteIndex - this.currentReadIndex;
@@ -216,79 +237,82 @@ namespace Hbm.Devices.Jet
 
         private void ReceiveLength(IAsyncResult ar)
         {
-            int bytesRead = this.client.EndReceive(ar);
-            this.enoughDataInBuffer = true;
-            if (bytesRead <= 0)
+            try
             {
-                this.client.Disconnect(false);
-                this.client.Close();
-                this.connectionState = ConnectionState.closed;
-                return;
-            }
-            else
-            {
-                this.currentWriteIndex += bytesRead;
-            }
-
-            while (this.enoughDataInBuffer)
-            {
-                switch (this.operation)
+                int bytesRead = this.client.EndReceive(ar);
+                this.enoughDataInBuffer = true;
+                if (bytesRead <= 0)
                 {
-                    case PeerOperation.READ_LENGTH:
-                        if (this.DataInBuffer() >= 4)
-                        {
-                            int length = BitConverter.ToInt32(this.receiveBuffer, this.currentReadIndex);
-                            this.currentReadIndex += 4;
-                            this.messageLength = IPAddress.NetworkToHostOrder(length);
-                            if (this.messageLength + 4 > ReceivebufferSize)
+                    lock (this)
+                    {
+                        this.client.Disconnect(false);
+                        this.client.Close();
+                        this.connectionState = ConnectionState.closed;
+                        return;
+                    }
+                }
+                else
+                {
+                    this.currentWriteIndex += bytesRead;
+                }
+
+                while (this.enoughDataInBuffer)
+                {
+                    switch (this.operation)
+                    {
+                        case PeerOperation.READ_LENGTH:
+                            if (this.DataInBuffer() >= 4)
                             {
-                                // handle error: log, close socket etc.
-                            }
+                                int length = BitConverter.ToInt32(this.receiveBuffer, this.currentReadIndex);
+                                this.currentReadIndex += 4;
+                                this.messageLength = IPAddress.NetworkToHostOrder(length);
+                                if (this.messageLength + 4 > ReceivebufferSize)
+                                {
+                                    // handle error: log, close socket etc.
+                                }
 
-                            this.operation = PeerOperation.READ_MESSAGE;
-                        }
-                        else
-                        {
-                            this.enoughDataInBuffer = false;
-                        }
-
-                        break;
-
-                    case PeerOperation.READ_MESSAGE:
-                        if (this.DataInBuffer() >= this.messageLength)
-                        {
-                            string json = Encoding.UTF8.GetString(this.receiveBuffer, this.currentReadIndex, this.messageLength);
-                            this.currentReadIndex += this.messageLength;
-                            int remainingData = this.DataInBuffer();
-                            if (remainingData > 0)
-                            {
-                                Buffer.BlockCopy(this.receiveBuffer, this.currentReadIndex, this.receiveBuffer, 0, remainingData);
-                                this.currentWriteIndex = remainingData;
+                                this.operation = PeerOperation.READ_MESSAGE;
                             }
                             else
                             {
-                                this.currentWriteIndex = 0;
+                                this.enoughDataInBuffer = false;
                             }
 
-                            this.currentReadIndex = 0;
-                            this.operation = PeerOperation.READ_LENGTH;
+                            break;
 
-                            if (this.HandleIncomingMessage != null)
+                        case PeerOperation.READ_MESSAGE:
+                            if (this.DataInBuffer() >= this.messageLength)
                             {
-                                this.HandleIncomingMessage(this, new StringEventArgs(json));
+                                string json = Encoding.UTF8.GetString(this.receiveBuffer, this.currentReadIndex, this.messageLength);
+                                this.currentReadIndex += this.messageLength;
+                                int remainingData = this.DataInBuffer();
+                                if (remainingData > 0)
+                                {
+                                    Buffer.BlockCopy(this.receiveBuffer, this.currentReadIndex, this.receiveBuffer, 0, remainingData);
+                                    this.currentWriteIndex = remainingData;
+                                }
+                                else
+                                {
+                                    this.currentWriteIndex = 0;
+                                }
+
+                                this.currentReadIndex = 0;
+                                this.operation = PeerOperation.READ_LENGTH;
+
+                                if (this.HandleIncomingMessage != null)
+                                {
+                                    this.HandleIncomingMessage(this, new StringEventArgs(json));
+                                }
                             }
-                        }
-                        else
-                        {
-                            this.enoughDataInBuffer = false;
-                        }
+                            else
+                            {
+                                this.enoughDataInBuffer = false;
+                            }
 
-                        break;
+                            break;
+                    }
                 }
-            }
 
-            try
-            {
                 this.client.BeginReceive(this.receiveBuffer, this.currentWriteIndex, ReceivebufferSize - this.DataInBuffer(), 0, new AsyncCallback(this.ReceiveLength), null);
             }
             catch (ObjectDisposedException)
