@@ -65,7 +65,9 @@ namespace JetExamples
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 Matcher matcher = new Matcher();
                 // matcher.ContainsAllOf = new string[] { "theState", "foo", "bar" };
-                this.peer.Fetch(out this.fetchId, matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                JObject request = this.peer.Fetch(out this.fetchId, matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                Console.WriteLine("Fetch request:");
+                Console.WriteLine(request);
             }
             else
             {
@@ -78,6 +80,7 @@ namespace JetExamples
             if (completed && this.IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully fetched!");
+                Console.WriteLine(response);
                 this.timer = new Timer(this.Elapsed, null, 5000, 0);
             }
             else
@@ -92,7 +95,9 @@ namespace JetExamples
         {
             if (this.fetchId != null)
             {
-                this.peer.Unfetch(this.fetchId, this.UnfetchResponseCallback, 5000);
+                JObject request = this.peer.Unfetch(this.fetchId, this.UnfetchResponseCallback, 5000);
+                Console.WriteLine("Unfetch request:");
+                Console.WriteLine(request);
             }
         }
 
@@ -101,6 +106,7 @@ namespace JetExamples
             if (completed && this.IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully unfetched!");
+                Console.WriteLine(response);
             }
             else
             {
