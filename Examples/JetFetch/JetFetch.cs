@@ -31,6 +31,7 @@
 namespace JetExamples
 {
     using System;
+    using System.Net;
     using System.Threading;
     using Hbm.Devices.Jet;
     using Newtonsoft.Json.Linq;
@@ -44,7 +45,9 @@ namespace JetExamples
         private JetFetch()
         {
             // var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            var ips = Dns.GetHostAddresses("172.19.1.1");
+            var connection = new SocketJetConnection(ips[0], 11122);
             this.peer = new JetPeer(connection);
             this.peer.Connect(this.OnConnect, 5000);
         }
@@ -61,8 +64,8 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 Matcher matcher = new Matcher();
-                matcher.ContainsAllOf = new string[] { "theState", "foo", "bar" };
-                this.fetchId = this.peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                // matcher.ContainsAllOf = new string[] { "theState", "foo", "bar" };
+                this.peer.Fetch(out this.fetchId, matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
             }
             else
             {

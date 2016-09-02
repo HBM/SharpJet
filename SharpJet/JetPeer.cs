@@ -171,7 +171,7 @@ namespace Hbm.Devices.Jet
             this.ExecuteMethod(call, responseTimeoutMs);
         }
 
-        public FetchId Fetch(Matcher matcher, Action<JToken> fetchCallback, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        public void Fetch(out FetchId id, Matcher matcher, Action<JToken> fetchCallback, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             int fetchId = Interlocked.Increment(ref this.fetchIdCounter);
             JetFetcher fetcher = new JetFetcher(fetchCallback);
@@ -188,7 +188,7 @@ namespace Hbm.Devices.Jet
             parameters["id"] = fetchId;
             JetMethod fetch = new JetMethod(JetMethod.Fetch, parameters, responseCallback);
             this.ExecuteMethod(fetch, responseTimeoutMs);
-            return new FetchId(fetchId);
+            id = new FetchId(fetchId);
         }
 
         public void Unfetch(FetchId fetchId, Action<bool, JToken> responseCallback, double responseTimeoutMs)
