@@ -32,7 +32,6 @@ namespace Hbm.Devices.Jet
 {
     using System;
     using System.Threading;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     internal class JetMethod
@@ -99,9 +98,9 @@ namespace Hbm.Devices.Jet
             }
         }
 
-        internal string GetJson()
+        internal JObject GetJson()
         {
-            return JsonConvert.SerializeObject(this.json);
+            return this.json;
         }
     }
 }

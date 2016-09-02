@@ -31,6 +31,7 @@
 namespace JetExamples
 {
     using System;
+    using System.Net;
     using System.Threading;
     using Hbm.Devices.Jet;
     using Newtonsoft.Json.Linq;
@@ -44,7 +45,9 @@ namespace JetExamples
         private JetFetch()
         {
             // var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
+            var ips = Dns.GetHostAddresses("172.19.1.1");
+            var connection = new SocketJetConnection(ips[0], 11122);
             this.peer = new JetPeer(connection);
             this.peer.Connect(this.OnConnect, 5000);
         }
@@ -61,8 +64,10 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 Matcher matcher = new Matcher();
-                matcher.ContainsAllOf = new string[] { "theState", "foo", "bar" };
-                this.fetchId = this.peer.Fetch(matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                // matcher.ContainsAllOf = new string[] { "theState", "foo", "bar" };
+                JObject request = this.peer.Fetch(out this.fetchId, matcher, this.FetchCallback, this.FetchResponseCallback, 5000);
+                Console.WriteLine("Fetch request:");
+                Console.WriteLine(request);
             }
             else
             {
@@ -75,6 +80,7 @@ namespace JetExamples
             if (completed && this.IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully fetched!");
+                Console.WriteLine(response);
                 this.timer = new Timer(this.Elapsed, null, 5000, 0);
             }
             else
@@ -89,7 +95,9 @@ namespace JetExamples
         {
             if (this.fetchId != null)
             {
-                this.peer.Unfetch(this.fetchId, this.UnfetchResponseCallback, 5000);
+                JObject request = this.peer.Unfetch(this.fetchId, this.UnfetchResponseCallback, 5000);
+                Console.WriteLine("Unfetch request:");
+                Console.WriteLine(request);
             }
         }
 
@@ -98,6 +106,7 @@ namespace JetExamples
             if (completed && this.IsSuccessResponse(response))
             {
                 Console.WriteLine("States successfully unfetched!");
+                Console.WriteLine(response);
             }
             else
             {
