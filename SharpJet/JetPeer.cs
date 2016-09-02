@@ -285,7 +285,8 @@ namespace Hbm.Devices.Jet
                 }
             }
 
-            this.connection.SendMessage(method.GetJson());
+            JObject request = method.GetJson();
+            this.connection.SendMessage(JsonConvert.SerializeObject(request));
         }
 
         private void RegisterStateCallback(string path, Func<string, JToken, JToken> callback)
