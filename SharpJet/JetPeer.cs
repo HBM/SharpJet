@@ -269,17 +269,19 @@ namespace Hbm.Devices.Jet
 
         private void ExecuteMethod(JetMethod method, double timeoutMs)
         {
+            if (timeoutMs <= 0.0)
+            {
+                throw new ArgumentException("timeoutMs");
+            }
+
             if (method.HasResponseCallback())
             {
                 int id = method.GetRequestId();
                 lock (this.openRequests)
                 {
-                    if (timeoutMs > 0.0)
-                    {
-                        method.RequestTimer.Interval = timeoutMs;
-                        method.RequestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
-                        method.RequestTimer.Start();
-                    }
+                    method.RequestTimer.Interval = timeoutMs;
+                    method.RequestTimer.Elapsed += (sender, e) => RequestTimer_Elapsed(this, e, method);
+                    method.RequestTimer.Start();
 
                     this.openRequests.Add(id, method);
                 }
