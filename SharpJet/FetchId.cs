@@ -45,5 +45,10 @@ namespace Hbm.Devices.Jet
         {
             return this.id;
         }
+
+        public override string ToString()
+        {
+            return this.id.ToString();
+        }
     }
 }
