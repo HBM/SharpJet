@@ -246,3 +246,4 @@ ModelManifest.xml
 
 .build/
 .coverageHistory/
+**/AssemblyInfo.cs
