@@ -76,7 +76,7 @@ namespace Hbm.Devices.Jet
         /// <param name="value">The initial value of the state to be added.</param>
         /// <param name="stateCallback">
         /// <para>The callback method that will be called if somebody calls a "Set" on the state to be added.</para>
-        /// <para>If this parameter is null, the state is registered read-only (cannot be changed via "Set") aon the Jet daemon.</para>
+        /// <para>If this parameter is null, the state is registered read-only (cannot be changed via "Set") on the Jet daemon.</para>
         /// <para>
         /// The callback method must conform to the following prototype JToken callback(string path, JToken value).
         /// "path" is the path under which the state was registered. This might be useful to use a single callback method for several
@@ -91,7 +91,7 @@ namespace Hbm.Devices.Jet
         /// </param>
         /// <param name="responseCallback">A callback method that will be called if this method succeeds or fails.</param>
         /// <param name="responseTimeoutMilliseconds">The timeout how long the operation might take before failing.</param>
-        public JObject Add(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<bool, JToken> responseCallback, double responseTimeoutMilliseconds)
+        public JObject AddState(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<bool, JToken> responseCallback, double responseTimeoutMilliseconds)
         {
             if (path == null)
             {

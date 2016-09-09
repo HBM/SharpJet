@@ -65,7 +65,7 @@ namespace JetExamples
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
                 JValue stateValue = new JValue(12);
-                this.peer.Add(StateName, stateValue, this.StateCallback, this.AddResponseCallback, 5000);
+                this.peer.AddState(StateName, stateValue, this.StateCallback, this.AddResponseCallback, 5000);
             }
             else
             {
