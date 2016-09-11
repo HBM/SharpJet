@@ -20,6 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{61E8
 		scripts\version.ps1 = scripts\version.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06348FE6-CD01-42C2-A702-4F2102C8B350}"
+	ProjectSection(SolutionItems) = preProject
+		AssemblyInfo.template = AssemblyInfo.template
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
