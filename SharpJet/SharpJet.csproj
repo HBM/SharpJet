@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="JetPeerException.cs" />
     <Compile Include="JsonRpcException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FetchId.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
@@ -67,6 +66,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

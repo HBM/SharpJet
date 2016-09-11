@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestJetConnection.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +58,9 @@
       <Project>{8e017e78-e6ed-4e30-8b5d-1bdbe2a7cbe8}</Project>
       <Name>SharpJet</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
