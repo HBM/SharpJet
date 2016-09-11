@@ -35,11 +35,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SharpJet")]
+[assembly: AssemblyTitle("%name%")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Hottinger Baldwin Messtechnik GmbH")]
-[assembly: AssemblyProduct("SharpJet")]
+[assembly: AssemblyProduct("%name%")]
 [assembly: AssemblyCopyright("Copyright © Hottinger Baldwin Messtechnik GmbH 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

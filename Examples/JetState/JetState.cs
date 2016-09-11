@@ -98,7 +98,7 @@ namespace JetExamples
             }
             else
             {
-                this.peer.Remove(StateName, this.RemoveStateCallback, 5000);
+                this.peer.RemoveState(StateName, this.RemoveStateCallback, 5000);
                 this.peer.Disconnect();
             }
         }
