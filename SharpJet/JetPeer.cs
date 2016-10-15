@@ -148,7 +148,15 @@ namespace Hbm.Devices.Jet
         {
             if (path == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("path");
+            }
+
+            lock (this.stateCallbacks)
+            {
+                if (this.stateCallbacks.ContainsKey(path))
+                {
+                    throw new ArgumentException("Don't call Set() on a state you own, use Change() instead!", "path");
+                }
             }
 
             JObject parameters = new JObject();
@@ -162,7 +170,15 @@ namespace Hbm.Devices.Jet
         {
             if (path == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("path");
+            }
+
+            lock (this.stateCallbacks)
+            {
+                if (!this.stateCallbacks.ContainsKey(path))
+                {
+                    throw new ArgumentException("You can't call Change() on a state you don't own!", "path");
+                }
             }
 
             JObject parameters = new JObject();
