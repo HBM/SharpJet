@@ -573,14 +573,14 @@ namespace Hbm.Devices.Jet
             return false;
         }
 
-        private JObject RemoveStateOrMethod(bool isStatate, string path, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        private JObject RemoveStateOrMethod(bool isState, string path, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             if (path == null)
             {
                 throw new ArgumentNullException();
             }
 
-            if (isStatate)
+            if (isState)
             {
                 this.UnregisterStateCallback(path);
             }
