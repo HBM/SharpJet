@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		AssemblyInfo.template = AssemblyInfo.template
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetSet", "Examples\JetSet\JetSet.csproj", "{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{9F462B97-C8D4-41AD-ABEF-E91FF953414E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F462B97-C8D4-41AD-ABEF-E91FF953414E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F462B97-C8D4-41AD-ABEF-E91FF953414E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,5 +65,6 @@ Global
 		{CD71435F-F489-457E-9516-553D4BB07E93} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
 		{1810A7B1-7C30-40DA-B300-530FBA4A375F} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
 		{9F462B97-C8D4-41AD-ABEF-E91FF953414E} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
+		{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
 	EndGlobalSection
 EndGlobal
