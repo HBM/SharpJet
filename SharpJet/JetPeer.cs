@@ -178,6 +178,7 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
+            parameters["timeout"] = responseTimeoutMs * 1000.0;
             JetMethod set = new JetMethod(JetMethod.Set, parameters, responseCallback);
             return this.ExecuteMethod(set, responseTimeoutMs);
         }
@@ -213,6 +214,7 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
+            parameters["timeout"] = responseTimeoutMs * 1000.0;
             if (args.Type != JTokenType.Null)
             {
                 parameters["args"] = args;
