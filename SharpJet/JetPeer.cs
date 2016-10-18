@@ -38,6 +38,8 @@ namespace Hbm.Devices.Jet
 
     public class JetPeer
     {
+        private const double DefaultRoutingTimeout = 10.0;
+
         private IJetConnection connection;
         private int fetchIdCounter;
         private Dictionary<int, JetMethod> openRequests;
@@ -93,8 +95,15 @@ namespace Hbm.Devices.Jet
         /// </param>
         /// <param name="responseCallback">A callback method that will be called if this method succeeds or fails.</param>
         /// <param name="responseTimeoutMilliseconds">The timeout how long the operation might take before failing.</param>
+        /// <param name="stateSetTimeoutMilliseconds">The timeout how long a set operation on this state might take before the daemon signals timeout to the peer calling set().</param>
         /// <returns>A JObject representing the Add message send to the Jet daemon.</returns>
-        public JObject AddState(string path, JToken value, Func<string, JToken, JToken> stateCallback, Action<bool, JToken> responseCallback, double responseTimeoutMilliseconds)
+        public JObject AddState(
+            string path,
+            JToken value,
+            Func<string, JToken, JToken> stateCallback,
+            Action<bool, JToken> responseCallback,
+            double responseTimeoutMilliseconds, 
+            double stateSetTimeoutMilliseconds = DefaultRoutingTimeout)
         {
             if (path == null)
             {
@@ -104,6 +113,7 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
+            parameters["timeout"] = stateSetTimeoutMilliseconds * 1000.0;
             if (stateCallback == null)
             {
                 parameters["fetchOnly"] = true;
@@ -114,7 +124,12 @@ namespace Hbm.Devices.Jet
             return this.ExecuteMethod(add, responseTimeoutMilliseconds);
         }
 
-        public JObject AddMethod(string path, Func<string, JToken, JToken> methodCallback, Action<bool, JToken> responseCallback, double responseTimeoutMilliseconds)
+        public JObject AddMethod(
+            string path,
+            Func<string, JToken, JToken> methodCallback,
+            Action<bool, JToken> responseCallback,
+            double responseTimeoutMilliseconds,
+            double methodCallTimeoutMilliseconds = DefaultRoutingTimeout)
         {
             if (path == null)
             {
@@ -128,6 +143,7 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
+            parameters["timeout"] = methodCallTimeoutMilliseconds * 1000.0;
 
             this.RegisterMethodCallback(path, methodCallback);
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
