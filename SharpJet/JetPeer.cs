@@ -118,8 +118,10 @@ namespace Hbm.Devices.Jet
             {
                 parameters["fetchOnly"] = true;
             }
-
-            this.RegisterStateCallback(path, stateCallback);
+            else
+            {
+                this.RegisterStateCallback(path, stateCallback);
+	        }
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
             return this.ExecuteMethod(add, responseTimeoutMilliseconds);
         }
