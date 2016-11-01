@@ -271,7 +271,7 @@ namespace Hbm.Devices.Jet
 
                     JObject response = new JObject();
                     response["jsonrpc"] = "2.0";
-                    response["id"] = fetchId.GetId();
+                    response["id"] = id;
                     JObject error = new JObject();
                     error["code"] = -32100;
                     error["message"] = "timeout while waiting for response";
