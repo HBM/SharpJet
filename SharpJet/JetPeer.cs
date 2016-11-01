@@ -38,7 +38,7 @@ namespace Hbm.Devices.Jet
 
     public class JetPeer
     {
-        private const double DefaultRoutingTimeout = 10.0;
+        private const double DefaultRoutingTimeout = 1000.0;
 
         private IJetConnection connection;
         private int fetchIdCounter;
