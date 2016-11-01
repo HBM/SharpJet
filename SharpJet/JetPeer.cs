@@ -268,9 +268,17 @@ namespace Hbm.Devices.Jet
                 {
                     method = peer.openRequests[id];
                     peer.openRequests.Remove(id);
+
+                    JObject response = new JObject();
+                    response["jsonrpc"] = "2.0";
+                    response["id"] = fetchId.GetId();
+                    JObject error = new JObject();
+                    error["code"] = -32100;
+                    error["message"] = "timeout while waiting for response";
+                    response["error"] = error;
                     lock (method)
                     {
-                        method.CallResponseCallback(false, null);
+                        method.CallResponseCallback(false, response);
                     }
                 }
             }
