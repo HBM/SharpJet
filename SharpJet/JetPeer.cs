@@ -113,7 +113,7 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
-            parameters["timeout"] = stateSetTimeoutMilliseconds * 1000.0;
+            parameters["timeout"] = stateSetTimeoutMilliseconds / 1000.0;
             if (stateCallback == null)
             {
                 parameters["fetchOnly"] = true;
@@ -145,7 +145,7 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
-            parameters["timeout"] = methodCallTimeoutMilliseconds * 1000.0;
+            parameters["timeout"] = methodCallTimeoutMilliseconds / 1000.0;
 
             this.RegisterMethodCallback(path, methodCallback);
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
@@ -180,7 +180,7 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
-            parameters["timeout"] = responseTimeoutMs * 1000.0;
+            parameters["timeout"] = responseTimeoutMs / 1000.0;
             JetMethod set = new JetMethod(JetMethod.Set, parameters, responseCallback);
             return this.ExecuteMethod(set, responseTimeoutMs);
         }
@@ -216,7 +216,7 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
-            parameters["timeout"] = responseTimeoutMs * 1000.0;
+            parameters["timeout"] = responseTimeoutMs / 1000.0;
             if (args.Type != JTokenType.Null)
             {
                 parameters["args"] = args;
