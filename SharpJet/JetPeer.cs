@@ -214,6 +214,14 @@ namespace Hbm.Devices.Jet
                 throw new ArgumentNullException();
             }
 
+            lock (this.methodCallbacks)
+            {
+                if (this.methodCallbacks.ContainsKey(path))
+                {
+                    throw new ArgumentException("You can't call Call() on a method you don't own!", "path");
+                }
+            }
+
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["timeout"] = responseTimeoutMs / 1000.0;
