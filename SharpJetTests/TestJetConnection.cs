@@ -31,6 +31,8 @@
 namespace Hbm.Devices.Jet
 {
     using System;
+    using System.Collections.Generic;
+
     public enum Behaviour
     {
         ConnectionFail,
@@ -41,9 +43,12 @@ namespace Hbm.Devices.Jet
     {
         private Behaviour behaviour;
 
+        public List<string> messages;
+
         public TestJetConnection(Behaviour behaviour)
         {
             this.behaviour = behaviour;
+            this.messages = new List<string>();
         }
 
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
@@ -65,6 +70,7 @@ namespace Hbm.Devices.Jet
 
         public void SendMessage(string json)
         {
+            messages.Add(json);
         }
 
         public void Disconnect()

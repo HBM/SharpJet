@@ -28,6 +28,10 @@
 //
 // </copyright>
 
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("SharpJetTests")]
+
 namespace Hbm.Devices.Jet
 {
     using System;
@@ -64,6 +68,21 @@ namespace Hbm.Devices.Jet
 
         public void Disconnect()
         {
+            var tempDictionary = new Dictionary<string, Func<string, JToken, JToken>>();
+
+            lock (this.stateCallbacks)
+            {
+                foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in stateCallbacks)
+                {
+                    tempDictionary.Add(entry.Key, entry.Value);
+                }
+            }
+
+            foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in tempDictionary)
+            {
+                this.RemoveState(entry.Key, null, 0);
+            }
+
             this.connection.Disconnect();
         }
 
@@ -340,7 +359,7 @@ namespace Hbm.Devices.Jet
 
         private JObject ExecuteMethod(JetMethod method, double timeoutMs)
         {
-            if (timeoutMs <= 0.0)
+            if (timeoutMs < 0.0)
             {
                 throw new ArgumentException("timeoutMs");
             }
@@ -361,6 +380,14 @@ namespace Hbm.Devices.Jet
             JObject request = method.GetJson();
             this.connection.SendMessage(JsonConvert.SerializeObject(request));
             return request;
+        }
+
+        internal int NumberOfRegisteredStateCallbacks()
+        {
+            lock (this.stateCallbacks)
+            {
+                return this.stateCallbacks.Count;
+            }
         }
 
         private void RegisterStateCallback(string path, Func<string, JToken, JToken> callback)

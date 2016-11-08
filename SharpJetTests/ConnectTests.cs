@@ -31,6 +31,7 @@
 namespace Hbm.Devices.Jet
 {
     using System.Collections;
+    using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -62,6 +63,38 @@ namespace Hbm.Devices.Jet
             peer.Connect(this.OnConnect, 1);
             Assert.AreEqual(this.connectCallbackCalled, true);
             return this.connectCompleted;
+        }
+
+        [Test]
+        public void RemoveStatesWhenDisconnect()
+        {
+            const string state = "theState";
+
+            var connection = new TestJetConnection(Behaviour.ConnectionSuccess);
+            var peer = new JetPeer(connection);
+            peer.Connect(this.OnConnect, 1);
+            JValue stateValue = new JValue(12);
+            peer.AddState(state, stateValue, this.OnSet, this.OnResponse, 3000);
+            peer.Disconnect();
+            Assert.AreEqual(0, peer.NumberOfRegisteredStateCallbacks());
+            string removeJson = connection.messages[1];
+            JToken json = JToken.Parse(removeJson);
+            JToken method = json["method"];
+            Assert.AreEqual("remove", method.ToString());
+            JToken parameters = json["params"];
+            JToken path = parameters["path"];
+            Assert.AreEqual(state, path.ToString());
+
+            // check if StateRemove is emitted
+        }
+
+        private JToken OnSet(string arg1, JToken arg2)
+        {
+            return null;
+        }
+
+        private void OnResponse(bool arg1, JToken arg2)
+        {
         }
 
         private void OnConnect(bool completed)
