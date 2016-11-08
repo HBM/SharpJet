@@ -164,7 +164,7 @@ namespace Hbm.Devices.Jet
 
         public JObject Set(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
-            if (path == null)
+            if (String.IsNullOrEmpty(path))
             {
                 throw new ArgumentNullException("path");
             }
