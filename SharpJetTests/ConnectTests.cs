@@ -84,8 +84,6 @@ namespace Hbm.Devices.Jet
             JToken parameters = json["params"];
             JToken path = parameters["path"];
             Assert.AreEqual(state, path.ToString());
-
-            // check if StateRemove is emitted
         }
 
         private JToken OnSet(string arg1, JToken arg2)
