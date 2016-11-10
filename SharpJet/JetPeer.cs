@@ -107,8 +107,7 @@ namespace Hbm.Devices.Jet
         /// </para>
         /// <para>
         /// "value" contains the new value that should be set.
-        /// If "value" is accepted without adapting, callback must return null.
-        /// If "value" is accepted but adapted to a different value, the adapted value must be returned by callback.
+        /// The callback MUST return the new state value, regardless if the value was adapted or accepted without any change.
         /// If callback can't accept the value to be set, it must throw a <see cref="JsonRpcException"/>.
         /// </para>
         /// </param>
