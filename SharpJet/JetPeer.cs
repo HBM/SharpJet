@@ -133,6 +133,19 @@ namespace Hbm.Devices.Jet
             double responseTimeoutMilliseconds, 
             double stateSetTimeoutMilliseconds = DefaultRoutingTimeout)
         {
+            return this.AddState(path, value, null, null, stateCallback, responseCallback, responseTimeoutMilliseconds, stateSetTimeoutMilliseconds);
+        }
+
+        public JObject AddState(
+            string path,
+            JToken value,
+            string[] setGroups,
+            string[] fetchGroups,
+            Func<string, JToken, JToken> stateCallback,
+            Action<bool, JToken> responseCallback,
+            double responseTimeoutMilliseconds,
+            double stateSetTimeoutMilliseconds = DefaultRoutingTimeout)
+        {
             if (path == null)
             {
                 throw new ArgumentNullException("path");
@@ -149,7 +162,16 @@ namespace Hbm.Devices.Jet
             else
             {
                 this.RegisterStateCallback(path, stateCallback);
-	        }
+            }
+
+            if (((setGroups != null) && (setGroups.Length > 0)) || ((fetchGroups != null) && (fetchGroups.Length > 0)))
+            {
+                JObject access = new JObject();
+                parameters["access"] = access;
+                access["setGroups"] = new JArray(setGroups);
+                access["fetchGroups"] = new JArray(fetchGroups);
+            }
+
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
             return this.ExecuteMethod(add, responseTimeoutMilliseconds);
         }
