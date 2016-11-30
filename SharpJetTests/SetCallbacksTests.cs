@@ -1,4 +1,4 @@
-﻿// <copyright file="TestJetConnection.cs" company="Hottinger Baldwin Messtechnik GmbH">
+﻿// <copyright file="ConnectTests.cs" company="Hottinger Baldwin Messtechnik GmbH">
 //
 // SharpJet, a library to communicate with Jet IPC.
 //
@@ -30,11 +30,12 @@
 
 namespace Hbm.Devices.Jet
 {
-    using Newtonsoft.Json;
+    using NUnit.Framework;
     using Newtonsoft.Json.Linq;
     using System;
+    using Newtonsoft.Json;
 
-    public class TestSetConnection : IJetConnection
+    public class TestSetCallbackConnection : IJetConnection
     {
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
         public static String successPath = "success";
@@ -67,6 +68,36 @@ namespace Hbm.Devices.Jet
         }
 
         public void Disconnect()
+        {
+        }
+    }
+
+    [TestFixture]
+    public class SetCallbacksTests
+    {
+        private bool setSucceeded;
+        private bool setCallbackCalled;
+        private JetPeer peer;
+
+        [Test]
+        public void SetTestOnOwnState()
+        {
+            JValue stateValue = new JValue(12);
+            JObject message = peer.AddState(TestSetCallbackConnection.successPath, stateValue, this.OnSet, this.AddResponseCallback, 3000);
+        }
+
+        private void AddResponseCallback(bool completed, JToken response)
+        {
+            this.setSucceeded = completed;
+            this.setCallbackCalled = true;
+        }
+
+        private JToken OnSet(string path, JToken newValue)
+        {
+            return null;
+        }
+
+        private void OnConnect(bool completed)
         {
         }
     }
