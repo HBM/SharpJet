@@ -92,6 +92,16 @@ namespace Hbm.Devices.Jet
             return this.ExecuteMethod(info, responseTimeoutMs);
         }
 
+        public JObject Authenticate(string user, string password, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        {
+            JObject credentials = new JObject();
+            credentials["user"] = user;
+            credentials["password"] = password;
+            JetMethod authenticate = new JetMethod(JetMethod.Authenticate, credentials, responseCallback);
+            return this.ExecuteMethod(authenticate, responseTimeoutMs);
+        }
+
+
         /// <summary>
         /// Adds a state to a Jet daemon.
         /// </summary>
