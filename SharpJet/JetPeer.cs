@@ -183,6 +183,18 @@ namespace Hbm.Devices.Jet
             double responseTimeoutMilliseconds,
             double methodCallTimeoutMilliseconds = DefaultRoutingTimeout)
         {
+            return this.AddMethod(path, null, null, methodCallback, responseCallback, responseTimeoutMilliseconds, methodCallTimeoutMilliseconds);
+        }
+
+        public JObject AddMethod(
+            string path,
+            string[] callGroups,
+            string[] fetchGroups,
+            Func<string, JToken, JToken> methodCallback,
+            Action<bool, JToken> responseCallback,
+            double responseTimeoutMilliseconds,
+            double methodCallTimeoutMilliseconds = DefaultRoutingTimeout)
+        {
             if (path == null)
             {
                 throw new ArgumentNullException("path");
@@ -196,6 +208,13 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["timeout"] = methodCallTimeoutMilliseconds / 1000.0;
+            if (((callGroups != null) && (callGroups.Length > 0)) || ((fetchGroups != null) && (fetchGroups.Length > 0)))
+            {
+                JObject access = new JObject();
+                parameters["access"] = access;
+                access["callGroups"] = new JArray(callGroups);
+                access["fetchGroups"] = new JArray(fetchGroups);
+            }
 
             this.RegisterMethodCallback(path, methodCallback);
             JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
