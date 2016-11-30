@@ -82,8 +82,17 @@ namespace Hbm.Devices.Jet
         [Test]
         public void SetTestOnOwnState()
         {
+            peer = new JetPeer(new TestSetCallbackConnection());
             JValue stateValue = new JValue(12);
             JObject message = peer.AddState(TestSetCallbackConnection.successPath, stateValue, this.OnSet, this.AddResponseCallback, 3000);
+
+            Assert.Throws<ArgumentException>(
+                delegate
+                {
+                    JValue newValue = new JValue(13);
+                    peer.Set(TestSetCallbackConnection.successPath, newValue, this.AddResponseCallback, 3000);
+                },
+                "no exception thrown when setting own state");
         }
 
         private void AddResponseCallback(bool completed, JToken response)
