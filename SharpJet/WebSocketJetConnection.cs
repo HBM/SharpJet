@@ -160,13 +160,14 @@ namespace Hbm.Devices.Jet
             lock (this)
             {
                 this.connectTimer.Stop();
-                if (!this.webSocket.IsAlive)
+                if (this.webSocket.IsAlive)                 
                 {
                     this.webSocket.Close();
-                    if (this.connectCompleted != null)
-                    {
-                        this.connectCompleted(this.webSocket.IsAlive);
-                    }
+                }
+
+                if (this.connectCompleted != null)
+                {
+                    this.connectCompleted(this.webSocket.IsAlive);
                 }
             }
         }
