@@ -31,6 +31,7 @@
 namespace Hbm.Devices.Jet
 {
     using System;
+    using System.Net.Security;
     using System.Timers;
     using WebSocketSharp;
 
@@ -48,9 +49,15 @@ namespace Hbm.Devices.Jet
             this.webSocket.OnOpen += this.OnOpen;
             this.webSocket.OnClose += this.OnClose;
             this.webSocket.OnError += this.OnError;
-            this.webSocket.OnMessage += this.OnMessage;
+            this.webSocket.OnMessage += this.OnMessage;            
         }
 
+        public WebSocketJetConnection(string url, RemoteCertificateValidationCallback certificationCallback)
+            :this(url){
+
+            this.webSocket.SslConfiguration.ServerCertificateValidationCallback = certificationCallback;
+        }
+        
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
 
         private enum ConnectionState
