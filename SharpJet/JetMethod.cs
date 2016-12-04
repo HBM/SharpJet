@@ -51,9 +51,11 @@ namespace Hbm.Devices.Jet
         private Action<bool, JToken> responseCallback;
         private int requestId;
         private System.Timers.Timer requestTimer;
+        private double responseTimeoutMs;
 
-        internal JetMethod(string method, JObject parameters, Action<bool, JToken> responseCallback)
+        internal JetMethod(string method, JObject parameters, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
+            this.responseTimeoutMs = responseTimeoutMs;
             this.responseCallback = responseCallback;
             if (responseCallback != null)
             {
@@ -79,6 +81,11 @@ namespace Hbm.Devices.Jet
             {
                 return requestTimer;
             }
+        }
+
+        internal double getTimeoutMs()
+        {
+            return responseTimeoutMs;
         }
 
         internal bool HasResponseCallback()

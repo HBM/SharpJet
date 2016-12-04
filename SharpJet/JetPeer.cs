@@ -80,8 +80,8 @@ namespace Hbm.Devices.Jet
 
         public JObject Info(Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
-            JetMethod info = new JetMethod(JetMethod.Info, null, responseCallback);
-            return this.ExecuteMethod(info, responseTimeoutMs);
+            JetMethod info = new JetMethod(JetMethod.Info, null, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(info);
         }
 
         public JObject Authenticate(string user, string password, Action<bool, JToken> responseCallback, double responseTimeoutMs)
@@ -89,8 +89,8 @@ namespace Hbm.Devices.Jet
             JObject credentials = new JObject();
             credentials["user"] = user;
             credentials["password"] = password;
-            JetMethod authenticate = new JetMethod(JetMethod.Authenticate, credentials, responseCallback);
-            return this.ExecuteMethod(authenticate, responseTimeoutMs);
+            JetMethod authenticate = new JetMethod(JetMethod.Authenticate, credentials, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(authenticate);
         }
 
 
@@ -135,8 +135,8 @@ namespace Hbm.Devices.Jet
             string[] fetchGroups,
             Func<string, JToken, JToken> stateCallback,
             Action<bool, JToken> responseCallback,
-            double responseTimeoutMilliseconds,
-            double stateSetTimeoutMilliseconds = DefaultRoutingTimeout)
+            double responseTimeoutMs,
+            double stateSetTimeoutMs = DefaultRoutingTimeout)
         {
             if (path == null)
             {
@@ -146,7 +146,7 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
-            parameters["timeout"] = stateSetTimeoutMilliseconds / 1000.0;
+            parameters["timeout"] = stateSetTimeoutMs / 1000.0;
             if (stateCallback == null)
             {
                 parameters["fetchOnly"] = true;
@@ -164,8 +164,8 @@ namespace Hbm.Devices.Jet
                 access["fetchGroups"] = new JArray(fetchGroups);
             }
 
-            JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
-            return this.ExecuteMethod(add, responseTimeoutMilliseconds);
+            JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(add);
         }
 
         public JObject AddMethod(
@@ -184,8 +184,8 @@ namespace Hbm.Devices.Jet
             string[] fetchGroups,
             Func<string, JToken, JToken> methodCallback,
             Action<bool, JToken> responseCallback,
-            double responseTimeoutMilliseconds,
-            double methodCallTimeoutMilliseconds = DefaultRoutingTimeout)
+            double responseTimeoutMs,
+            double methodCallTimeoutMs = DefaultRoutingTimeout)
         {
             if (path == null)
             {
@@ -199,7 +199,7 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
-            parameters["timeout"] = methodCallTimeoutMilliseconds / 1000.0;
+            parameters["timeout"] = methodCallTimeoutMs / 1000.0;
             if (((callGroups != null) && (callGroups.Length > 0)) || ((fetchGroups != null) && (fetchGroups.Length > 0)))
             {
                 JObject access = new JObject();
@@ -209,8 +209,8 @@ namespace Hbm.Devices.Jet
             }
 
             this.RegisterMethodCallback(path, methodCallback);
-            JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback);
-            return this.ExecuteMethod(add, responseTimeoutMilliseconds);
+            JetMethod add = new JetMethod(JetMethod.Add, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(add);
         }
 
         public JObject RemoveState(string path, Action<bool, JToken> responseCallback, double responseTimeoutMs)
@@ -242,8 +242,8 @@ namespace Hbm.Devices.Jet
             parameters["path"] = path;
             parameters["value"] = value;
             parameters["timeout"] = responseTimeoutMs / 1000.0;
-            JetMethod set = new JetMethod(JetMethod.Set, parameters, responseCallback);
-            return this.ExecuteMethod(set, responseTimeoutMs);
+            JetMethod set = new JetMethod(JetMethod.Set, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(set);
         }
 
         public JObject Change(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs)
@@ -264,8 +264,8 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
-            JetMethod change = new JetMethod(JetMethod.Change, parameters, responseCallback);
-            return this.ExecuteMethod(change, responseTimeoutMs);
+            JetMethod change = new JetMethod(JetMethod.Change, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(change);
         }
 
         public JObject Call(string path, JToken args, Action<bool, JToken> responseCallback, double responseTimeoutMs)
@@ -291,8 +291,8 @@ namespace Hbm.Devices.Jet
                 parameters["args"] = args;
             }
 
-            JetMethod call = new JetMethod(JetMethod.Call, parameters, responseCallback);
-            return this.ExecuteMethod(call, responseTimeoutMs);
+            JetMethod call = new JetMethod(JetMethod.Call, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(call);
         }
 
         public JObject Fetch(out FetchId id, Matcher matcher, Action<JToken> fetchCallback, Action<bool, JToken> responseCallback, double responseTimeoutMs)
@@ -310,14 +310,14 @@ namespace Hbm.Devices.Jet
 
             parameters["caseInsensitive"] = matcher.CaseInsensitive;
             parameters["id"] = fetchId;
-            JetMethod fetch = new JetMethod(JetMethod.Fetch, parameters, responseCallback);
+            JetMethod fetch = new JetMethod(JetMethod.Fetch, parameters, responseCallback, responseTimeoutMs);
             id = new FetchId(fetchId);
             lock (allFetches)
             {
                 allFetches.Add(id);
             }
 
-            return this.ExecuteMethod(fetch, responseTimeoutMs);
+            return this.ExecuteMethod(fetch);
         }
 
         public JObject Unfetch(FetchId fetchId, Action<bool, JToken> responseCallback, double responseTimeoutMs)
@@ -326,13 +326,13 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["id"] = fetchId.GetId();
-            JetMethod unfetch = new JetMethod(JetMethod.Unfetch, parameters, responseCallback);
+            JetMethod unfetch = new JetMethod(JetMethod.Unfetch, parameters, responseCallback, responseTimeoutMs);
             lock (allFetches)
             {
                 allFetches.Remove(fetchId);
             }
 
-            return this.ExecuteMethod(unfetch, responseTimeoutMs);
+            return this.ExecuteMethod(unfetch);
         }
 
         private static void RequestTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, JetMethod method)
@@ -409,8 +409,9 @@ namespace Hbm.Devices.Jet
             this.HandleStateOrMethodCallbacks(json);
         }
 
-        private JObject ExecuteMethod(JetMethod method, double timeoutMs)
+        private JObject ExecuteMethod(JetMethod method)
         {
+            double timeoutMs = method.getTimeoutMs();
             if (timeoutMs < 0.0)
             {
                 throw new ArgumentException("timeoutMs");
@@ -775,8 +776,8 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
-            JetMethod remove = new JetMethod(JetMethod.Remove, parameters, responseCallback);
-            return this.ExecuteMethod(remove, responseTimeoutMs);
+            JetMethod remove = new JetMethod(JetMethod.Remove, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(remove);
         }
 
         private void HandleResponse(JObject json)
