@@ -72,7 +72,7 @@ namespace Hbm.Devices.Jet
                 return true;
             }
 
-            if ((a == null) || (b == null))
+            if (((object)a == null) || ((object)b == null))
             {
                 return false;
             }
