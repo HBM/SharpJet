@@ -57,16 +57,17 @@ namespace Hbm.Devices.Jet
         {
             this.responseTimeoutMs = responseTimeoutMs;
             this.responseCallback = responseCallback;
-            if (responseCallback != null)
-            {
-                this.requestTimer = new System.Timers.Timer();
-                this.requestId = Interlocked.Increment(ref requestIdCounter);
-            }
 
             JObject json = new JObject();
             json["jsonrpc"] = "2.0";
             json["method"] = method;
-            json["id"] = this.requestId;
+            if (responseCallback != null)
+            {
+                this.requestTimer = new System.Timers.Timer();
+                this.requestId = Interlocked.Increment(ref requestIdCounter);
+                json["id"] = this.requestId;
+            }
+
             if (parameters != null)
             {
                 json["params"] = parameters;
