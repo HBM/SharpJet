@@ -50,6 +50,7 @@ namespace Hbm.Devices.Jet
         private Dictionary<int, JetFetcher> openFetches;
         private Dictionary<string, Func<string, JToken, JToken>> stateCallbacks;
         private Dictionary<string, Func<string, JToken, JToken>> methodCallbacks;
+        private HashSet<FetchId> allFetches;
 
         public JetPeer(IJetConnection connection)
         {
@@ -57,6 +58,8 @@ namespace Hbm.Devices.Jet
             this.openFetches = new Dictionary<int, JetFetcher>();
             this.stateCallbacks = new Dictionary<string, Func<string, JToken, JToken>>();
             this.methodCallbacks = new Dictionary<string, Func<string, JToken, JToken>>();
+            this.allFetches = new HashSet<FetchId>();
+
             this.connection = connection;
             connection.HandleIncomingMessage += this.HandleIncomingJson;
         }
@@ -68,20 +71,9 @@ namespace Hbm.Devices.Jet
 
         public void Disconnect()
         {
-            var tempDictionary = new Dictionary<string, Func<string, JToken, JToken>>();
-
-            lock (this.stateCallbacks)
-            {
-                foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in stateCallbacks)
-                {
-                    tempDictionary.Add(entry.Key, entry.Value);
-                }
-            }
-
-            foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in tempDictionary)
-            {
-                this.RemoveState(entry.Key, null, 0);
-            }
+            removeAllStates();
+            removeAllMethods();
+            removeAllFetches();
 
             this.connection.Disconnect();
         }
@@ -320,6 +312,11 @@ namespace Hbm.Devices.Jet
             parameters["id"] = fetchId;
             JetMethod fetch = new JetMethod(JetMethod.Fetch, parameters, responseCallback);
             id = new FetchId(fetchId);
+            lock (allFetches)
+            {
+                allFetches.Add(id);
+            }
+
             return this.ExecuteMethod(fetch, responseTimeoutMs);
         }
 
@@ -330,6 +327,11 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["id"] = fetchId.GetId();
             JetMethod unfetch = new JetMethod(JetMethod.Unfetch, parameters, responseCallback);
+            lock (allFetches)
+            {
+                allFetches.Remove(fetchId);
+            }
+
             return this.ExecuteMethod(unfetch, responseTimeoutMs);
         }
 
@@ -437,6 +439,59 @@ namespace Hbm.Devices.Jet
             lock (this.stateCallbacks)
             {
                 return this.stateCallbacks.Count;
+            }
+        }
+
+        private void removeAllFetches()
+        {
+            var tempSet = new HashSet<FetchId>();
+            lock (allFetches)
+            {
+                foreach (var fetchId in allFetches)
+                {
+                    tempSet.Add(fetchId);
+                }
+            }
+
+            foreach (var fetchId in tempSet)
+            {
+                this.Unfetch(fetchId, null, 0);
+            }
+        }
+
+        private void removeAllStates()
+        {
+            var tempDictionary = new Dictionary<string, Func<string, JToken, JToken>>();
+
+            lock (this.stateCallbacks)
+            {
+                foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in stateCallbacks)
+                {
+                    tempDictionary.Add(entry.Key, entry.Value);
+                }
+            }
+
+            foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in tempDictionary)
+            {
+                this.RemoveState(entry.Key, null, 0);
+            }
+        }
+
+        private void removeAllMethods()
+        {
+            var tempDictionary = new Dictionary<string, Func<string, JToken, JToken>>();
+
+            lock (this.methodCallbacks)
+            {
+                foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in methodCallbacks)
+                {
+                    tempDictionary.Add(entry.Key, entry.Value);
+                }
+            }
+
+            foreach (KeyValuePair<string, Func<string, JToken, JToken>> entry in tempDictionary)
+            {
+                this.RemoveMethod(entry.Key, null, 0);
             }
         }
 
