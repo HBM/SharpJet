@@ -30,8 +30,6 @@
 
 namespace Hbm.Devices.Jet
 {
-    using System.Threading;
- 
     public class FetchId
     {
         private int id;
@@ -49,6 +47,42 @@ namespace Hbm.Devices.Jet
         public override string ToString()
         {
             return this.id.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            FetchId other = obj as FetchId;
+            if (other == null)
+            {
+                return false;
+            }
+
+            return other.id == this.id;
+        }
+
+        public override int GetHashCode()
+        {
+            return id;
+        }
+
+        public static bool operator ==(FetchId a, FetchId b)
+        {
+            if (object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if ((a == null) || (b == null))
+            {
+                return false;
+            }
+
+            return a.id == b.id;
+        }
+
+        public static bool operator !=(FetchId a, FetchId b)
+        {
+            return !(a == b);
         }
     }
 }
