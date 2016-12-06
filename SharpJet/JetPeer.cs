@@ -84,6 +84,26 @@ namespace Hbm.Devices.Jet
             return this.ExecuteMethod(info);
         }
 
+        /// <summary>
+        /// Configures a connection.
+        /// </summary>
+        /// <param name="name">A name for the connection. This name is mainly used on the daemon for better logging.</param>
+        /// <param name="responseCallback">A callback method that will be called if this method succeeds or fails.</param>
+        /// <param name="responseTimeoutMilliseconds">The timeout how long the operation might take before failing.</param>
+        /// <returns>A JObject representing the Config message send to the Jet daemon.</returns>
+        public JObject Config(String name, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            JObject parameters = new JObject();
+            parameters["name"] = name;
+            JetMethod config = new JetMethod(JetMethod.Config, parameters, responseCallback, responseTimeoutMs);
+            return this.ExecuteMethod(config);
+        }
+
         public JObject Authenticate(string user, string password, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             JObject credentials = new JObject();
@@ -92,7 +112,6 @@ namespace Hbm.Devices.Jet
             JetMethod authenticate = new JetMethod(JetMethod.Authenticate, credentials, responseCallback, responseTimeoutMs);
             return this.ExecuteMethod(authenticate);
         }
-
 
         /// <summary>
         /// Adds a state to a Jet daemon.
