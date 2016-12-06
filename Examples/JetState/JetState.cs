@@ -51,10 +51,10 @@ namespace JetExamples
         private JetState()
         {
             // var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
-            IPAddress[] ips;
-            ips = Dns.GetHostAddresses("172.19.1.1");
-            var connection = new SocketJetConnection(ips[0], 11122);
+            var connection = new WebSocketJetConnection("ws://172.19.1.1:11123/api/jet/");
+            //IPAddress[] ips;
+            //ips = Dns.GetHostAddresses("172.19.1.1");
+            // var connection = new SocketJetConnection(ips[0], 11122);
             this.peer = new JetPeer(connection);
             this.peer.Connect(this.OnConnect, 5000);
         }
@@ -64,8 +64,7 @@ namespace JetExamples
             if (completed)
             {
                 Console.WriteLine("Successfully connected to Jet daemon!");
-                JValue stateValue = new JValue(12);
-                this.peer.AddState(StateName, stateValue, this.StateCallback, this.AddResponseCallback, 5000);
+                JObject call = this.peer.Config(this.GetType().Name, this.ConfigResponseCallback, 5000);
             }
             else
             {
@@ -76,6 +75,29 @@ namespace JetExamples
         private JToken StateCallback(string path, JToken value)
         {
             return new JValue(42);
+        }
+
+        private void ConfigResponseCallback(bool completed, JToken response)
+        {
+            if (completed)
+            {
+                Console.WriteLine("Configured: " + response);
+                JObject call = this.peer.Authenticate("john", "doe", this.AuthResponseCallback, 5000);
+            }
+            else
+            {
+                Console.WriteLine("Configuration failed!");
+            }
+        }
+
+        private void AuthResponseCallback(bool completed, JToken response)
+        {
+            Console.WriteLine("Authenticated: " + response);
+            JValue stateValue = new JValue(12);
+            string[] fetchGroups = new string[] { "users", "fred" };
+            string[] setGroups = new string[] { "admin", "users" };
+            JObject res = this.peer.AddState(StateName, stateValue, setGroups, fetchGroups, this.StateCallback, this.AddResponseCallback, 5000);
+            Console.WriteLine("Add: " + res);
         }
 
         private void AddResponseCallback(bool completed, JToken response)
