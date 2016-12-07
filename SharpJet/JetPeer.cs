@@ -128,7 +128,8 @@ namespace Hbm.Devices.Jet
         /// </para>
         /// <para>
         /// "value" contains the new value that should be set.
-        /// The callback MUST return the new state value, regardless if the value was adapted or accepted without any change.
+        /// The callback MUST return the new state value, if the value was adapted or accepted without any change.
+        /// The callback SHOULd return <code>null</code> if the state was not changed.
         /// If callback can't accept the value to be set, it must throw a <see cref="JsonRpcException"/>.
         /// </para>
         /// </param>
@@ -636,14 +637,10 @@ namespace Hbm.Devices.Jet
                     throw new JsonRpcException(JsonRpcException.InvalidParams, "no value in parameter sub-object in Json");
                 }
 
-                JToken newValue = callback(jetPath, value);
-                if (newValue != null)
+                JToken notifyValue = callback(jetPath, value);
+                if (notifyValue != null)
                 {
-                    this.Change(jetPath, newValue, null, 0);
-                }
-                else
-                {
-                    this.Change(jetPath, value, null, 0);
+                    this.Change(jetPath, notifyValue, null, 0);
                 }
 
                 JObject result = new JObject();
