@@ -49,7 +49,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JetClientSslConfiguration.cs" />
     <Compile Include="JetPeerException.cs" />
     <Compile Include="JsonRpcException.cs" />
     <Compile Include="FetchId.cs">
