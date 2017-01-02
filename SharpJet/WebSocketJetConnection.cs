@@ -50,7 +50,6 @@ namespace Hbm.Devices.Jet
             this.webSocket.OnClose += this.OnClose;
             this.webSocket.OnError += this.OnError;
             this.webSocket.OnMessage += this.OnMessage;
-
             this.webSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };            
         }
 
