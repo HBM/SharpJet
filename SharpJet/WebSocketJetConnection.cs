@@ -49,13 +49,18 @@ namespace Hbm.Devices.Jet
             this.webSocket.OnOpen += this.OnOpen;
             this.webSocket.OnClose += this.OnClose;
             this.webSocket.OnError += this.OnError;
-            this.webSocket.OnMessage += this.OnMessage;            
+            this.webSocket.OnMessage += this.OnMessage;
+
+            this.webSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };            
         }
 
         public WebSocketJetConnection(string url, RemoteCertificateValidationCallback certificationCallback)
             :this(url){
 
-            this.webSocket.SslConfiguration.ServerCertificateValidationCallback = certificationCallback;
+            if (certificationCallback != null) {
+                this.webSocket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls;
+                this.webSocket.SslConfiguration.ServerCertificateValidationCallback = certificationCallback;
+            }
         }
         
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
