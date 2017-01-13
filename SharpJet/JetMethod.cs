@@ -37,6 +37,7 @@ namespace Hbm.Devices.Jet
     internal class JetMethod
     {
         internal const string Authenticate = "authenticate";
+        internal const string Passwd = "passwd";
         internal const string Config = "config";
         internal const string Info = "info";
         internal const string Set = "set";
