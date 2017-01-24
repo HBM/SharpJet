@@ -252,7 +252,7 @@ namespace Hbm.Devices.Jet
             return this.RemoveStateOrMethod(false, path, responseCallback, responseTimeoutMs);
         }
 
-        public JObject Set(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        public JObject Set(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs, double stateSetTimeoutMs)
         {
             if (String.IsNullOrEmpty(path))
             {
@@ -270,7 +270,11 @@ namespace Hbm.Devices.Jet
             JObject parameters = new JObject();
             parameters["path"] = path;
             parameters["value"] = value;
-            parameters["timeout"] = responseTimeoutMs / 1000.0;
+            if (stateSetTimeoutMs > 0.1)
+            {
+                parameters["timeout"] = stateSetTimeoutMs / 1000.0;
+            } 
+
             JetMethod set = new JetMethod(JetMethod.Set, parameters, responseCallback, responseTimeoutMs);
             return this.ExecuteMethod(set);
         }
@@ -297,7 +301,7 @@ namespace Hbm.Devices.Jet
             return this.ExecuteMethod(change);
         }
 
-        public JObject Call(string path, JToken args, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        public JObject Call(string path, JToken args, Action<bool, JToken> responseCallback, double responseTimeoutMs, double methodCallTimeoutMs)
         {
             if (path == null)
             {
@@ -314,7 +318,11 @@ namespace Hbm.Devices.Jet
 
             JObject parameters = new JObject();
             parameters["path"] = path;
-            parameters["timeout"] = responseTimeoutMs / 1000.0;
+            if (methodCallTimeoutMs > 0.1)
+            {
+                parameters["timeout"] = methodCallTimeoutMs / 1000.0;
+            }
+
             if (args.Type != JTokenType.Null)
             {
                 parameters["args"] = args;

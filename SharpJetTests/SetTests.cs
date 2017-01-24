@@ -56,7 +56,7 @@ namespace Hbm.Devices.Jet
         public void SetTestSuccess()
         {
             JValue stateValue = new JValue(12);
-            JObject message = peer.Set(TestSetConnection.successPath, stateValue, this.SetResponseCallback, 3000);
+            JObject message = peer.Set(TestSetConnection.successPath, stateValue, this.SetResponseCallback, 3000, 0.0);
             Assert.True(this.setCallbackCalled, "SetCallback was not called");
             Assert.True(this.setSucceeded, "SetCallback was completed successfully");
         }
@@ -68,7 +68,7 @@ namespace Hbm.Devices.Jet
             JObject message = peer.AddState(TestSetConnection.successPath, stateValue, this.OnSet, this.AddResponseCallback, 3000);
             Assert.Throws<ArgumentException>(delegate
             {
-                message = peer.Set(TestSetConnection.successPath, stateValue, this.SetResponseCallback, 3000);
+                message = peer.Set(TestSetConnection.successPath, stateValue, this.SetResponseCallback, 3000, 0.0);
             }, "Setting a state that is owned by the peer didn't failed");
         }
 
@@ -78,13 +78,13 @@ namespace Hbm.Devices.Jet
             Assert.Throws<ArgumentNullException>(delegate
             {
                 JValue stateValue = new JValue(12);
-                JObject message = peer.Set(null, stateValue, this.SetResponseCallback, 3000);
+                JObject message = peer.Set(null, stateValue, this.SetResponseCallback, 3000, 0.0);
             }, "Setting a state with \"null\" path didn't failed");
 
             Assert.Throws<ArgumentNullException>(delegate
             {
                 JValue stateValue = new JValue(12);
-                JObject message = peer.Set("", stateValue, this.SetResponseCallback, 3000);
+                JObject message = peer.Set("", stateValue, this.SetResponseCallback, 3000, 0.0);
             }, "Setting a state with empty path didn't failed");
         }
 

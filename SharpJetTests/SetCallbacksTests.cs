@@ -90,7 +90,7 @@ namespace Hbm.Devices.Jet
                 delegate
                 {
                     JValue newValue = new JValue(13);
-                    peer.Set(TestSetCallbackConnection.successPath, newValue, this.AddResponseCallback, 3000);
+                    peer.Set(TestSetCallbackConnection.successPath, newValue, this.AddResponseCallback, 3000, 0.0);
                 },
                 "no exception thrown when setting own state");
         }
