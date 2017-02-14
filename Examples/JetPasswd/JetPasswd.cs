@@ -126,6 +126,8 @@ namespace JetExamples
             {
                 Console.WriteLine("Change password timed out!");
             }
+
+            this.peer.Disconnect();
         }
     }
 }
