@@ -252,6 +252,11 @@ namespace Hbm.Devices.Jet
             return this.RemoveStateOrMethod(false, path, responseCallback, responseTimeoutMs);
         }
 
+        public JObject Set(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        {
+            return Set(path, value, responseCallback, responseTimeoutMs, 0.0);
+        }
+
         public JObject Set(string path, JToken value, Action<bool, JToken> responseCallback, double responseTimeoutMs, double stateSetTimeoutMs)
         {
             if (String.IsNullOrEmpty(path))
@@ -299,6 +304,11 @@ namespace Hbm.Devices.Jet
             parameters["value"] = value;
             JetMethod change = new JetMethod(JetMethod.Change, parameters, responseCallback, responseTimeoutMs);
             return this.ExecuteMethod(change);
+        }
+
+        public JObject Call(string path, JToken args, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        {
+            return Call(path, args, responseCallback, responseTimeoutMs, 0.0);
         }
 
         public JObject Call(string path, JToken args, Action<bool, JToken> responseCallback, double responseTimeoutMs, double methodCallTimeoutMs)
