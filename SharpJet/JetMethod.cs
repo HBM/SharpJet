@@ -47,6 +47,7 @@ namespace Hbm.Devices.Jet
         internal const string Add = "add";
         internal const string Remove = "remove";
         internal const string Change = "change";
+        internal const string Get = "get";
 
         private static int requestIdCounter;
         private JObject json;
