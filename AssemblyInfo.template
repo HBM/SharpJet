@@ -61,6 +61,6 @@ using System.Runtime.InteropServices;
 // Major, Minor and Build number are to be increased equally in both
 // AssemblyFileVersion and AssemblyInformationalVersion
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0%revcount%%shorthash%%dirty%")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyInformationalVersion("1.1.0%revcount%%shorthash%%dirty%")]
