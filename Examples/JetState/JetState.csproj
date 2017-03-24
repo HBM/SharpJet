@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JetState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -57,9 +58,7 @@
       <Name>SharpJet</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File "$(SolutionDir)\scripts\version.ps1" -git "$(SolutionDir)\packages\PortableGit.2.5.1.01\tools\bin\git.exe" -solutiondir $(SolutionDir) -assembly_info_template "$(SolutionDir)\AssemblyInfo.template" -assembly_info "$(ProjectDir)\Properties\AssemblyInfo.cs" -name "$(ProjectName)" -guid "43b84029-9d61-4d65-a5dc-fba65a5bd30f"</PreBuildEvent>
