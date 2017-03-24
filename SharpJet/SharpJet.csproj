@@ -59,6 +59,7 @@
     <Compile Include="JetMethod.cs" />
     <Compile Include="JetPeer.cs" />
     <Compile Include="Matcher.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketJetConnection.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
@@ -67,9 +68,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File "$(SolutionDir)\scripts\version.ps1" -git "$(SolutionDir)\packages\PortableGit.2.5.1.01\tools\bin\git.exe" -solutiondir $(SolutionDir) -assembly_info_template "$(SolutionDir)\AssemblyInfo.template" -assembly_info "$(ProjectDir)\Properties\AssemblyInfo.cs" -name "$(ProjectName)" -guid "975c5988-1b9d-47ed-af7d-e6f0ed9197bf"</PreBuildEvent>
