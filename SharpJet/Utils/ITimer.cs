@@ -1,4 +1,4 @@
-﻿// <copyright file="FetchId.cs" company="Hottinger Baldwin Messtechnik GmbH">
+﻿// <copyright file="JetPeer.cs" company="Hottinger Baldwin Messtechnik GmbH">
 //
 // SharpJet, a library to communicate with Jet IPC.
 //
@@ -28,36 +28,21 @@
 //
 // </copyright>
 
-namespace SharpJetTests
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+
+namespace Hbm.Devices.Jet.Utils
 {
     using System;
-    using FakeItEasy;
-    using Hbm.Devices.Jet;
-    using Newtonsoft.Json.Linq;
-    using NUnit.Framework;
+    using System.Timers;
 
-    [TestFixture]
-    public class JetFetcherTests
+    internal interface ITimer : IDisposable
     {
-        [Test]
-        public void TestCallFetchCallbackInvokesAction()
-        {
-            Action<JToken> callback = A.Fake<Action<JToken>>();
-            JetFetcher fetcher = new JetFetcher(callback);
-            JToken token = JToken.FromObject(42);
+        event ElapsedEventHandler Elapsed;
 
-            fetcher.CallFetchCallback(token);
-
-            A.CallTo(() => callback.Invoke(token)).MustHaveHappened(Repeated.Exactly.Once);
-        }
-
-        [Test]
-        public void TestCallFetchCallbackDoesNothingIfActionIsNull()
-        {
-            JetFetcher fetcher = new JetFetcher(null);
-            JToken token = JToken.FromObject(42);
-
-            Assert.DoesNotThrow(() => fetcher.CallFetchCallback(token));
-        }
+        double Interval { get; set; }
+        void Stop();
+        void Start();
     }
 }

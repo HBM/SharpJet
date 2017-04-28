@@ -458,7 +458,7 @@ namespace Hbm.Devices.Jet
 
         private JObject ExecuteMethod(JetMethod method)
         {
-            double timeoutMs = method.getTimeoutMs();
+            double timeoutMs = method.GetTimeoutMs();
             if (timeoutMs < 0.0)
             {
                 throw new ArgumentException("timeoutMs");

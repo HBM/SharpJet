@@ -63,6 +63,11 @@
     <Compile Include="SocketJetConnection.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="Utils\DisposableBase.cs" />
+    <Compile Include="Utils\ITimer.cs" />
+    <Compile Include="Utils\TimerAdapter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WebSocketJetConnection.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -28,13 +28,15 @@
 //
 // </copyright>
 
+using Hbm.Devices.Jet.Utils;
+
 namespace Hbm.Devices.Jet
 {
     using System;
     using System.Threading;
     using Newtonsoft.Json.Linq;
 
-    internal class JetMethod
+    internal class JetMethod : DisposableBase
     {
         internal const string Authenticate = "authenticate";
         internal const string Passwd = "passwd";
@@ -48,13 +50,15 @@ namespace Hbm.Devices.Jet
         internal const string Remove = "remove";
         internal const string Change = "change";
 
+        private bool _isDisposed;
         private static int requestIdCounter;
-        private JObject json;
-        private Action<bool, JToken> responseCallback;
-        private int requestId;
-        private System.Timers.Timer requestTimer;
-        private double responseTimeoutMs;
+        private readonly JObject json;
+        private readonly Action<bool, JToken> responseCallback;
+        private readonly int requestId;
+        private readonly double responseTimeoutMs;
 
+        internal ITimer RequestTimer { get; set; }
+        
         internal JetMethod(string method, JObject parameters, Action<bool, JToken> responseCallback, double responseTimeoutMs)
         {
             this.responseTimeoutMs = responseTimeoutMs;
@@ -65,7 +69,7 @@ namespace Hbm.Devices.Jet
             json["method"] = method;
             if (responseCallback != null)
             {
-                this.requestTimer = new System.Timers.Timer();
+                this.RequestTimer = new TimerAdapter();
                 this.requestId = Interlocked.Increment(ref requestIdCounter);
                 json["id"] = this.requestId;
             }
@@ -78,15 +82,20 @@ namespace Hbm.Devices.Jet
             this.json = json;
         }
 
-        internal System.Timers.Timer RequestTimer
+        protected override void Dispose(bool disposing)
         {
-            get
+            if (_isDisposed)
+                return;
+
+            if (disposing)
             {
-                return requestTimer;
+                RequestTimer.Dispose();
             }
+
+            _isDisposed = true;
         }
 
-        internal double getTimeoutMs()
+        internal double GetTimeoutMs()
         {
             return responseTimeoutMs;
         }
