@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="ConnectTests.cs" />
     <Compile Include="JetFetcherTests.cs" />
+    <Compile Include="JetMethodTests.cs" />
     <Compile Include="SetCallbacksTests.cs" />
     <Compile Include="SetTests.cs" />
     <Compile Include="TestJetConnection.cs" />
