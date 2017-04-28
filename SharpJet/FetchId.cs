@@ -32,7 +32,7 @@ namespace Hbm.Devices.Jet
 {
     public class FetchId
     {
-        private int id;
+        private readonly int id;
 
         internal FetchId(int id)
         {
@@ -52,7 +52,7 @@ namespace Hbm.Devices.Jet
         public override bool Equals(object obj)
         {
             FetchId other = obj as FetchId;
-            if (other == null)
+            if ((object)other == null)
             {
                 return false;
             }
@@ -67,17 +67,7 @@ namespace Hbm.Devices.Jet
 
         public static bool operator ==(FetchId a, FetchId b)
         {
-            if (object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-
-            if (((object)a == null) || ((object)b == null))
-            {
-                return false;
-            }
-
-            return a.id == b.id;
+            return (object)a != null && a.Equals(b);
         }
 
         public static bool operator !=(FetchId a, FetchId b)
