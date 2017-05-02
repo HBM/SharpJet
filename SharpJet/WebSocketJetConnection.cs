@@ -39,7 +39,7 @@ namespace Hbm.Devices.Jet
     {
         private bool isDisposed;
         private readonly object lockObject = new object();
-        private IWebSocket webSocket;
+        internal IWebSocket WebSocket { get; private set; }
         internal ITimer ConnectTimer { get; set; }
         private Action<bool> connectCompleted;
         private ConnectionState connectionState;
@@ -56,8 +56,8 @@ namespace Hbm.Devices.Jet
         {
             if (certificationCallback != null)
             {
-                this.webSocket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls;
-                this.webSocket.SslConfiguration.ServerCertificateValidationCallback = certificationCallback;
+                this.WebSocket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls;
+                this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = certificationCallback;
             }
         }
         
@@ -79,7 +79,7 @@ namespace Hbm.Devices.Jet
                 this.ConnectTimer.Elapsed += this.OnOpenElapsed;
                 this.ConnectTimer.AutoReset = false;
                 this.ConnectTimer.Start();
-                this.webSocket.ConnectAsync();
+                this.WebSocket.ConnectAsync();
             }
         }
 
@@ -93,7 +93,7 @@ namespace Hbm.Devices.Jet
                 }
 
                 this.connectionState = ConnectionState.closing;
-                this.webSocket.CloseAsync(WebSocketSharp.CloseStatusCode.Away);
+                this.WebSocket.CloseAsync(WebSocketSharp.CloseStatusCode.Away);
             }
         }
 
@@ -106,20 +106,20 @@ namespace Hbm.Devices.Jet
                     throw new JetPeerException("Websocket disconnected");
                 }
 
-                this.webSocket.Send(json);
+                this.WebSocket.Send(json);
             }
         }
 
         internal void SetWebSocket(IWebSocket webSocket)
         {
-            if (this.webSocket != null)
+            if (this.WebSocket != null)
             {
-                UnsubscribeWebSocket(this.webSocket);
+                UnsubscribeWebSocket();
             }
 
-            this.webSocket = webSocket;
-            SubscribeWebSocket(this.webSocket);
-            this.webSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };
+            this.WebSocket = webSocket;
+            SubscribeWebSocket();
+            this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };
         }
 
         protected override void Dispose(bool disposing)
@@ -133,10 +133,10 @@ namespace Hbm.Devices.Jet
                 {
                     if (this.IsConnected)
                     {
-                        this.webSocket.Close(WebSocketSharp.CloseStatusCode.Away);
+                        this.WebSocket.Close(WebSocketSharp.CloseStatusCode.Away);
                     }
-                    UnsubscribeWebSocket(webSocket);
-                    webSocket.Dispose();
+                    UnsubscribeWebSocket();
+                    WebSocket.Dispose();
 
                     if (ConnectTimer.Enabled)
                     {
@@ -149,20 +149,18 @@ namespace Hbm.Devices.Jet
             isDisposed = true;
         }
 
-        private void UnsubscribeWebSocket(IWebSocket webSocket)
+        private void UnsubscribeWebSocket()
         {
-            webSocket.OnOpen -= this.OnOpen;
-            webSocket.OnClose -= this.OnClose;
-            webSocket.OnError -= this.OnError;
-            webSocket.OnMessage -= this.OnMessage;
+            WebSocket.OnOpen -= this.OnOpen;
+            WebSocket.OnClose -= this.OnClose;
+            WebSocket.OnMessage -= this.OnMessage;
         }
 
-        private void SubscribeWebSocket(IWebSocket webSocket)
+        private void SubscribeWebSocket()
         {
-            webSocket.OnOpen += this.OnOpen;
-            webSocket.OnClose += this.OnClose;
-            webSocket.OnError += this.OnError;
-            webSocket.OnMessage += this.OnMessage;
+            WebSocket.OnOpen += this.OnOpen;
+            WebSocket.OnClose += this.OnClose;
+            WebSocket.OnMessage += this.OnMessage;
         }
 
         private void OnOpen(object sender, EventArgs e)
@@ -175,7 +173,7 @@ namespace Hbm.Devices.Jet
 
                 if (this.connectCompleted != null)
                 {
-                    this.connectCompleted(this.webSocket.IsAlive);
+                    this.connectCompleted(this.WebSocket.IsAlive);
                 }
             }
         }
@@ -194,14 +192,14 @@ namespace Hbm.Devices.Jet
             {
                 this.ConnectTimer.Stop();
                 this.ConnectTimer.Elapsed -= this.OnOpenElapsed;
-                if (this.webSocket.IsAlive)                 
+                if (this.WebSocket.IsAlive)                 
                 {
-                    this.webSocket.Close();
+                    this.WebSocket.Close();
                 }
 
                 if (this.connectCompleted != null)
                 {
-                    this.connectCompleted(this.webSocket.IsAlive);
+                    this.connectCompleted(this.WebSocket.IsAlive);
                 }
             }
         }
@@ -212,11 +210,6 @@ namespace Hbm.Devices.Jet
             {
                 this.HandleIncomingMessage(this, new StringEventArgs(e.Data));
             }
-        }
-
-        private void OnError(object sender, ErrorEventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }

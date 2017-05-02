@@ -49,6 +49,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="websocket-sharp, Version=1.0.2.59611, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectTests.cs" />
@@ -59,6 +63,8 @@
     <Compile Include="SetTests.cs" />
     <Compile Include="TestJetConnection.cs" />
     <Compile Include="TestSetConnection.cs" />
+    <Compile Include="Utils\WebSocketFakesFactory.cs" />
+    <Compile Include="WebSocketJetConnectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
