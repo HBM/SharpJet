@@ -32,7 +32,7 @@ namespace Hbm.Devices.Jet.Utils
 {
     using System;
 
-    internal abstract class DisposableBase : IDisposable
+    public abstract class DisposableBase : IDisposable
     {
         protected abstract void Dispose(bool disposing);
 

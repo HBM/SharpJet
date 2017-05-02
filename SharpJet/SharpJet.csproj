@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionState.cs" />
     <Compile Include="JetPeerException.cs" />
     <Compile Include="JsonRpcException.cs" />
     <Compile Include="FetchId.cs">
@@ -65,9 +66,11 @@
     </Compile>
     <Compile Include="Utils\DisposableBase.cs" />
     <Compile Include="Utils\ITimer.cs" />
+    <Compile Include="Utils\IWebSocket.cs" />
     <Compile Include="Utils\TimerAdapter.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\WebSocketAdapter.cs" />
     <Compile Include="WebSocketJetConnection.cs" />
   </ItemGroup>
   <ItemGroup>

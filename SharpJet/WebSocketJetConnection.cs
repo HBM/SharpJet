@@ -32,31 +32,30 @@ namespace Hbm.Devices.Jet
 {
     using System;
     using System.Net.Security;
-    using System.Timers;
     using WebSocketSharp;
+    using Hbm.Devices.Jet.Utils;
 
-    public class WebSocketJetConnection : IJetConnection, IDisposable
+    public class WebSocketJetConnection : DisposableBase, IJetConnection
     {
-        private WebSocket webSocket;
+        private bool isDisposed;
+        private readonly object lockObject = new object();
+        private IWebSocket webSocket;
+        internal ITimer ConnectTimer { get; set; }
         private Action<bool> connectCompleted;
-        private Timer connectTimer;
         private ConnectionState connectionState;
 
         public WebSocketJetConnection(string url)
         {
             this.connectionState = ConnectionState.closed;
-            this.webSocket = new WebSocket(url, "jet");
-            this.webSocket.OnOpen += this.OnOpen;
-            this.webSocket.OnClose += this.OnClose;
-            this.webSocket.OnError += this.OnError;
-            this.webSocket.OnMessage += this.OnMessage;
-            this.webSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };            
+            SetWebSocket(new WebSocketAdapter(url, "jet"));
+            this.ConnectTimer = new TimerAdapter();
         }
 
         public WebSocketJetConnection(string url, RemoteCertificateValidationCallback certificationCallback)
-            :this(url){
-
-            if (certificationCallback != null) {
+            : this(url)
+        {
+            if (certificationCallback != null)
+            {
                 this.webSocket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls;
                 this.webSocket.SslConfiguration.ServerCertificateValidationCallback = certificationCallback;
             }
@@ -64,24 +63,11 @@ namespace Hbm.Devices.Jet
         
         public event EventHandler<StringEventArgs> HandleIncomingMessage;
 
-        private enum ConnectionState
-        {
-            closed,
-            connected,
-            closing
-        }
-
-        public bool IsConnected
-        {
-            get
-            {
-                return this.connectionState == ConnectionState.connected;
-            }
-        }
+        public bool IsConnected => this.connectionState == ConnectionState.connected;
 
         public void Connect(Action<bool> completed, double timeoutMs)
         {
-            lock (this)
+            lock (lockObject)
             {
                 if (this.IsConnected)
                 {
@@ -89,17 +75,17 @@ namespace Hbm.Devices.Jet
                 }
 
                 this.connectCompleted = completed;
-                this.connectTimer = new Timer(timeoutMs);
-                this.connectTimer.Elapsed += this.OnOpenElapsed;
-                this.connectTimer.AutoReset = false;
-                this.connectTimer.Enabled = true;
+                this.ConnectTimer.Interval = timeoutMs;
+                this.ConnectTimer.Elapsed += this.OnOpenElapsed;
+                this.ConnectTimer.AutoReset = false;
+                this.ConnectTimer.Start();
                 this.webSocket.ConnectAsync();
             }
         }
 
         public void Disconnect()
         {
-            lock (this)
+            lock (lockObject)
             {
                 if (!this.IsConnected)
                 {
@@ -113,7 +99,7 @@ namespace Hbm.Devices.Jet
 
         public void SendMessage(string json)
         {
-            lock (this)
+            lock (lockObject)
             {
                 if (!this.IsConnected)
                 {
@@ -124,31 +110,67 @@ namespace Hbm.Devices.Jet
             }
         }
 
-        public void Dispose()
+        internal void SetWebSocket(IWebSocket webSocket)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            if (this.webSocket != null)
+            {
+                UnsubscribeWebSocket(this.webSocket);
+            }
+
+            this.webSocket = webSocket;
+            SubscribeWebSocket(this.webSocket);
+            this.webSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
+            if (isDisposed)
+                return;
+
             if (disposing)
             {
-                lock (this)
+                lock (lockObject)
                 {
                     if (this.IsConnected)
                     {
                         this.webSocket.Close(WebSocketSharp.CloseStatusCode.Away);
                     }
+                    UnsubscribeWebSocket(webSocket);
+                    webSocket.Dispose();
+
+                    if (ConnectTimer.Enabled)
+                    {
+                        ConnectTimer.Stop();
+                    }
+                    ConnectTimer.Dispose();
                 }
             }
+
+            isDisposed = true;
+        }
+
+        private void UnsubscribeWebSocket(IWebSocket webSocket)
+        {
+            webSocket.OnOpen -= this.OnOpen;
+            webSocket.OnClose -= this.OnClose;
+            webSocket.OnError -= this.OnError;
+            webSocket.OnMessage -= this.OnMessage;
+        }
+
+        private void SubscribeWebSocket(IWebSocket webSocket)
+        {
+            webSocket.OnOpen += this.OnOpen;
+            webSocket.OnClose += this.OnClose;
+            webSocket.OnError += this.OnError;
+            webSocket.OnMessage += this.OnMessage;
         }
 
         private void OnOpen(object sender, EventArgs e)
         {
-            lock (this)
+            lock (lockObject)
             {
-                this.connectTimer.Stop();
+                this.ConnectTimer.Stop();
+                this.ConnectTimer.Elapsed -= this.OnOpenElapsed;
                 this.connectionState = ConnectionState.connected;
 
                 if (this.connectCompleted != null)
@@ -160,7 +182,7 @@ namespace Hbm.Devices.Jet
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            lock (this)
+            lock (lockObject)
             {
                 this.connectionState = ConnectionState.closed;
             }
@@ -168,9 +190,10 @@ namespace Hbm.Devices.Jet
 
         private void OnOpenElapsed(object source, System.Timers.ElapsedEventArgs e)
         {
-            lock (this)
+            lock (lockObject)
             {
-                this.connectTimer.Stop();
+                this.ConnectTimer.Stop();
+                this.ConnectTimer.Elapsed -= this.OnOpenElapsed;
                 if (this.webSocket.IsAlive)                 
                 {
                     this.webSocket.Close();
