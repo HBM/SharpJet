@@ -35,5 +35,12 @@ namespace Hbm.Devices.Jet.Utils
 
     internal class TimerAdapter : Timer, ITimer
     {
+        internal TimerAdapter()
+        {    
+        }
+
+        internal TimerAdapter(double interval) : base(interval)
+        {     
+        }
     }
 }

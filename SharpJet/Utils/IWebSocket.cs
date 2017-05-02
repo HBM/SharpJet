@@ -1,4 +1,4 @@
-﻿// <copyright file="JetPeer.cs" company="Hottinger Baldwin Messtechnik GmbH">
+﻿// <copyright file="JetMethod.cs" company="Hottinger Baldwin Messtechnik GmbH">
 //
 // SharpJet, a library to communicate with Jet IPC.
 //
@@ -35,16 +35,23 @@ using System.Runtime.CompilerServices;
 namespace Hbm.Devices.Jet.Utils
 {
     using System;
-    using System.Timers;
+    using WebSocketSharp;
+    using WebSocketSharp.Net;
 
-    internal interface ITimer : IDisposable
+    internal interface IWebSocket : IDisposable
     {
-        event ElapsedEventHandler Elapsed;
+        event EventHandler OnOpen;
+        event EventHandler<CloseEventArgs> OnClose;
+        event EventHandler<ErrorEventArgs> OnError;
+        event EventHandler<MessageEventArgs> OnMessage;
 
-        bool Enabled { get; set; }
-        bool AutoReset { get; set; }
-        double Interval { get; set; }
-        void Stop();
-        void Start();
+        bool IsAlive { get; }
+        ClientSslConfiguration SslConfiguration { get; set; }
+
+        void ConnectAsync();
+        void CloseAsync(CloseStatusCode code);
+        void Close(CloseStatusCode code);
+        void Close();
+        void Send(string data);
     }
 }
