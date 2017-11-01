@@ -45,9 +45,7 @@ namespace JetExamples
         private JetFetch()
         {
             // var connection = new WebSocketJetConnection("wss://172.19.1.1");
-            // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
-            var ips = Dns.GetHostAddresses("172.19.1.1");
-            var connection = new SocketJetConnection(ips[0], 11122);
+            var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
             this.peer = new JetPeer(connection);
             this.peer.Connect(this.OnConnect, 5000);
         }
