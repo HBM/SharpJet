@@ -46,10 +46,11 @@ namespace JetExamples
         {
             // var connection = new WebSocketJetConnection("wss://172.19.1.1");
             // var connection = new WebSocketJetConnection("ws://172.19.1.1:11123");
-            var ips = Dns.GetHostAddresses("172.19.1.1");
-            var connection = new SocketJetConnection(ips[0], 11122);
+            // var ips = Dns.GetHostAddresses("wss://172.19.103.9/jet/canopen");
+            string url = "wss://172.19.103.9/jet/canopen";
+            var connection = new WebSocketJetConnection(url, delegate { return true; });
             this.peer = new JetPeer(connection);
-            this.peer.Connect(this.OnConnect, 5000);
+            this.peer.Connect(this.OnConnect, 2000);
         }
 
         public static void Main(string[] args)
@@ -125,7 +126,7 @@ namespace JetExamples
 
         private void FetchCallback(JToken fetchEvent)
         {
-            Console.WriteLine(fetchEvent);
+            //Console.WriteLine(fetchEvent);
         }
     }
 }

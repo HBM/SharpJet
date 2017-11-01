@@ -73,7 +73,7 @@ namespace Hbm.Devices.Jet
                 {
                     throw new JetPeerException("Websocket already connected");
                 }
-
+                SubscribeWebSocket();
                 this.connectCompleted = completed;
                 this.ConnectTimer.Interval = timeoutMs;
                 this.ConnectTimer.Elapsed += this.OnOpenElapsed;
@@ -112,14 +112,13 @@ namespace Hbm.Devices.Jet
 
         internal void SetWebSocket(IWebSocket webSocket)
         {
-            if (this.WebSocket != null)
-            {
-                UnsubscribeWebSocket();
-            }
+            //if (this.WebSocket != null)
+            //{
+            //    UnsubscribeWebSocket();
+            //}
 
             this.WebSocket = webSocket;
-            SubscribeWebSocket();
-            this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return false; };
+            this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return true; };
         }
 
         protected override void Dispose(bool disposing)
@@ -158,6 +157,7 @@ namespace Hbm.Devices.Jet
 
         private void SubscribeWebSocket()
         {
+            UnsubscribeWebSocket();
             WebSocket.OnOpen += this.OnOpen;
             WebSocket.OnClose += this.OnClose;
             WebSocket.OnMessage += this.OnMessage;
@@ -191,6 +191,7 @@ namespace Hbm.Devices.Jet
             lock (lockObject)
             {
                 this.ConnectTimer.Stop();
+                UnsubscribeWebSocket();
                 this.ConnectTimer.Elapsed -= this.OnOpenElapsed;
                 if (this.WebSocket.IsAlive)                 
                 {

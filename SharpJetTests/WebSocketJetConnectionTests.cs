@@ -130,7 +130,7 @@ namespace SharpJetTests
         }
 
         [Test]
-        public void TestConnectThrowsExceptionIfConnected()
+        public void TestConnectThrowsExceptionIfAlreadyConnected()
         {
             WebSocketJetConnection webSocketJetConnection = new WebSocketJetConnection("ws://172.19.191.179:8081");
             ITimer timer = A.Dummy<ITimer>();
@@ -170,9 +170,16 @@ namespace SharpJetTests
             webSocketJetConnection.SetWebSocket(webSocket);
             webSocketJetConnection.ConnectTimer = timer;
 
-            webSocketJetConnection.Connect(A.Dummy<Action<bool>>(), 1234.56);
+            Action<bool> connectCallback = A.Fake<Action<bool>>();
+            A.CallTo(() => connectCallback(false)).Invokes(() => {
+                webSocket.OnOpen += Raise.WithEmpty();
+            });
+
+            webSocketJetConnection.Connect(connectCallback, 1234.56);
 
             AssertTimerCallsOnConnect(timer, 1234.56);
+            A.CallTo(() => connectCallback(true)).MustNotHaveHappened();
+            A.CallTo(() => connectCallback(false)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Test]
