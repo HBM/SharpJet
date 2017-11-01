@@ -91,7 +91,6 @@ namespace Hbm.Devices.Jet
                 {
                     throw new JetPeerException("disconnecting an already disconnected websocket");
                 }
-
                 this.connectionState = ConnectionState.closing;
                 this.WebSocket.CloseAsync(WebSocketSharp.CloseStatusCode.Away);
             }
@@ -105,18 +104,12 @@ namespace Hbm.Devices.Jet
                 {
                     throw new JetPeerException("Websocket disconnected");
                 }
-
                 this.WebSocket.Send(json);
             }
         }
 
         internal void SetWebSocket(IWebSocket webSocket)
         {
-            //if (this.WebSocket != null)
-            //{
-            //    UnsubscribeWebSocket();
-            //}
-
             this.WebSocket = webSocket;
             this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return true; };
         }
@@ -144,7 +137,6 @@ namespace Hbm.Devices.Jet
                     ConnectTimer.Dispose();
                 }
             }
-
             isDisposed = true;
         }
 
