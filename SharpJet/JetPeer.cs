@@ -382,6 +382,23 @@ namespace Hbm.Devices.Jet
             return this.ExecuteMethod(unfetch);
         }
 
+        public JObject Get(Matcher matcher, Action<bool, JToken> responseCallback, double responseTimeoutMs)
+        {
+            JObject parameters = new JObject();
+            JObject path = this.FillPath(matcher);
+            if (path != null)
+            {
+                parameters["path"] = path;
+            }
+
+            parameters["caseInsensitive"] = matcher.CaseInsensitive;
+
+            JetMethod get = new JetMethod(JetMethod.Get, parameters, responseCallback, responseTimeoutMs);
+
+
+            return this.ExecuteMethod(get);
+        }
+
         private static void RequestTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, JetMethod method)
         {
             JetPeer peer = (JetPeer)sender;

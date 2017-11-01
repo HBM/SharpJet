@@ -247,3 +247,6 @@ ModelManifest.xml
 .build/
 .coverageHistory/
 **/AssemblyInfo.cs
+scripts/assembly_info
+SharpJet/scripts/
+SharpJet/Properties/AssemblyInfoORIG.cs
