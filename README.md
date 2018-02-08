@@ -20,5 +20,5 @@ Unfortunately there are two Powershells on a x64-System:
 Yes, that's absolutely weird!!! 
 
 Inside the relevant  Powershell just execute this command once:
-```SetExectuionPoliy RemoteSigned```  or ```SetExectuionPoliy Unrestricted```
-Notice that this enables executing powershell scripts for your system until you reset it to ```SetExectuionPoliy Unrestricted```. Read the current setting via ```Get-ExectuionPolicy```.
+```Set-ExecutionPolicy RemoteSigned```  or ```Set-ExecutionPolicy Unrestricted```
+Notice that this enables executing powershell scripts for your system until you reset it to ```Set-ExecutionPolicy Unrestricted```. Read the current setting via ```Get-ExecutionPolicy```.
