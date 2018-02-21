@@ -839,7 +839,7 @@ namespace Hbm.Devices.Jet
                         method.RequestTimer.Stop();
                         lock (method)
                         {
-                            method.CallResponseCallback(true, json);
+                            method.CallResponseCallback(json["error"] == null, json);
                         }
                     }
                 }
