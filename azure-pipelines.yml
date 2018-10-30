@@ -1,0 +1,51 @@
+resources:
+- repo: self
+
+queue:
+  name: Hosted VS2017
+  
+  demands: 
+  - msbuild
+  - visualstudio
+  - vstest
+
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.4.1'
+  inputs:
+    versionSpec: 4.4.1
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(Parameters.solution)'
+
+- task: kherzog.AssemblyInfoReader.assembly-info-reader-build-task.AssembyInfoReader@1
+  displayName: 'Generate variables $(Build.SourcesDirectory)\HBM.WT.API\Properties\AssemblyInfo.cs '
+  inputs:
+    searchPattern: '$(Build.SourcesDirectory)\SharpJet\Properties\AssemblyInfo.cs'
+
+- task: bool.update-assembly-info.update-assembly-info-task.update-assembly-info@2
+  displayName: 'Update Assembly: **\*AssemblyInfo.*'
+  inputs:
+    informationalVersion: '$(AssemblyInfo.AssemblyFileVersion.Major).$(AssemblyInfo.AssemblyFileVersion.Minor).$(AssemblyInfo.AssemblyFileVersion.Patch).$(Build.SourceVersion)'
+
+- task: VSBuild@1
+  displayName: 'Build solution **\*.sln'
+  inputs:
+    solution: '$(Parameters.solution)'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'VsTest - testAssemblies'
+  inputs:
+    testAssemblyVer2: |
+     **\$(BuildConfiguration)\*test*.dll
+     !**\obj\**
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: solidify-labs.chucknorris-build-enhancer.chuck-norris-task.ChuckNorrisTask@0
+  displayName: 'Chuck Norris Quotes'
