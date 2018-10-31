@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>SharpJet</id>
+    <version>1.0.0</version>
+    <title>SharpJet</title>
+    <authors>Stephan Gatzka</authors>
+    <owners>HBM GmbH</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A .Net jet peer written in C#.</description>
+    <summary>A .Net jet peer written in C#</summary>
+    <projectUrl>https://github.com/gatzka/SharpJet/</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/gatzka/SharpJet/master/LICENSE</licenseUrl>
+    <copyright>Copyright © 2018</copyright>
+    <tags>SharpJet, Jetbus.io, WebSockets</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Newtonsoft.Json" version="11.0.2" />
+        <dependency id="PortableGit" version="2.5.1.1" />
+        <dependency id="WebSocketSharp-NonPreRelease" version="1.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
