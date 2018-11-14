@@ -151,7 +151,7 @@ namespace SharpJetTests
         public void TestOperatorNotEqualsSameInstancesMustReturnFalse()
         {
             FetchId operand = new FetchId(42);
-            Assert.IsFalse(operand != operand, "Expected != call to be false.");
+            Assert.IsFalse(operand.GetId() != 42, "Expected != call to be false.");
         }
     }
 }
