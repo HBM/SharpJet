@@ -9,8 +9,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A .Net jet peer written in C#.</description>
     <summary>A .Net jet peer written in C#</summary>
-    <projectUrl>https://github.com/gatzka/SharpJet/</projectUrl>
-    <licenseUrl>https://raw.githubusercontent.com/gatzka/SharpJet/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/HBM/SharpJet/</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/HBM/SharpJet/master/LICENSE</licenseUrl>
     <copyright>Copyright © 2018</copyright>
     <tags>SharpJet, Jetbus.io, WebSockets</tags>
     <dependencies>
