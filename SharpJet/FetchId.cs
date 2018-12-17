@@ -67,7 +67,10 @@ namespace Hbm.Devices.Jet
 
         public static bool operator ==(FetchId a, FetchId b)
         {
-            return (object)a != null && a.Equals(b);
+            if ((object)a == null)
+                return (object)b == null;
+            else
+                return (object)b != null && a.Equals(b);
         }
 
         public static bool operator !=(FetchId a, FetchId b)
