@@ -44,7 +44,7 @@ namespace Hbm.Devices.Jet.Utils
         event EventHandler<CloseEventArgs> OnClose;
         event EventHandler<ErrorEventArgs> OnError;
         event EventHandler<MessageEventArgs> OnMessage;
-
+        bool IsSecure { get; }
         bool IsAlive { get; }
         ClientSslConfiguration SslConfiguration { get; }
 
