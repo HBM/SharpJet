@@ -46,7 +46,7 @@ namespace Hbm.Devices.Jet.Utils
         event EventHandler<MessageEventArgs> OnMessage;
 
         bool IsAlive { get; }
-        ClientSslConfiguration SslConfiguration { get; set; }
+        ClientSslConfiguration SslConfiguration { get; }
 
         void ConnectAsync();
         void CloseAsync(CloseStatusCode code);
