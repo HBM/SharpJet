@@ -14,10 +14,17 @@
     <copyright>Copyright © 2018</copyright>
     <tags>SharpJet, Jetbus.io, WebSockets</tags>
     <dependencies>
+      <group targetFramework=".NETFramework4.0">
+        <dependency id="Newtonsoft.Json" version="11.0.2" exclude="Build,Analyzers" />
+        <dependency id="WebSocketSharp-netstandard" version="1.0.1" exclude="Build,Analyzers" />
+      </group>
       <group targetFramework=".NETFramework4.5">
-        <dependency id="Newtonsoft.Json" version="11.0.2" />
-        <dependency id="PortableGit" version="2.5.1.1" />
-        <dependency id="WebSocketSharp-NonPreRelease" version="1.0.0" />
+        <dependency id="Newtonsoft.Json" version="11.0.2" exclude="Build,Analyzers" />
+        <dependency id="WebSocketSharp-netstandard" version="1.0.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Newtonsoft.Json" version="11.0.2" exclude="Build,Analyzers" />
+        <dependency id="WebSocketSharp-netstandard" version="1.0.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
