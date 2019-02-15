@@ -111,7 +111,8 @@ namespace Hbm.Devices.Jet
         internal void SetWebSocket(IWebSocket webSocket)
         {
             this.WebSocket = webSocket;
-            this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return true; };
+            if (this.WebSocket.IsSecure)
+                this.WebSocket.SslConfiguration.ServerCertificateValidationCallback = delegate { return true; };
         }
 
         protected override void Dispose(bool disposing)

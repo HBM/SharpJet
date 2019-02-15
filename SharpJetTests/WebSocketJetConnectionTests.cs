@@ -65,7 +65,7 @@ namespace SharpJetTests
         public void TestContructorSetsCertificationCallback()
         {
             RemoteCertificateValidationCallback certificationCallback = A.Dummy<RemoteCertificateValidationCallback>();
-            WebSocketJetConnection webSocketJetConnection = new WebSocketJetConnection("ws://172.19.191.179:8081",
+            WebSocketJetConnection webSocketJetConnection = new WebSocketJetConnection("wss://172.19.191.179:8081",
                 certificationCallback);
 
             Assert.AreEqual(SslProtocols.Tls, webSocketJetConnection.WebSocket.SslConfiguration.EnabledSslProtocols);
