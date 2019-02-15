@@ -81,8 +81,16 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File "$(SolutionDir)\scripts\version.ps1" -git "$(SolutionDir)\packages\PortableGit.2.5.1.01\tools\bin\git.exe" -solutiondir $(SolutionDir) -assembly_info_template "$(SolutionDir)\AssemblyInfo.template" -assembly_info "$(ProjectDir)\Properties\AssemblyInfo.cs" -name "$(ProjectName)" -guid "975c5988-1b9d-47ed-af7d-e6f0ed9197bf"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\GitInfo.2.0.20\build\GitInfo.targets" Condition="Exists('..\packages\GitInfo.2.0.20\build\GitInfo.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\GitInfo.2.0.20\build\GitInfo.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitInfo.2.0.20\build\GitInfo.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

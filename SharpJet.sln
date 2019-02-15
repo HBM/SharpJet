@@ -15,11 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetFetch", "Examples\JetFet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetMethod", "Examples\JetMethod\JetMethod.csproj", "{9F462B97-C8D4-41AD-ABEF-E91FF953414E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{61E84DA9-5176-451E-850B-8B13D202C473}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\version.ps1 = scripts\version.ps1
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06348FE6-CD01-42C2-A702-4F2102C8B350}"
 	ProjectSection(SolutionItems) = preProject
 		AssemblyInfo.template = AssemblyInfo.template
@@ -83,5 +78,8 @@ Global
 		{E25D1777-1CC1-4406-A6BD-C69F2D0C9DBB} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
 		{E35D2AD9-95B6-434B-9B2C-751D8EE37A32} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
 		{3CA5B55A-961C-4417-B5AC-95E08F63581B} = {1EB44F50-6115-4250-8FC1-9ECFFA502A7D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {124DEF90-0CDA-423A-9B0E-6BE5A71051BC}
 	EndGlobalSection
 EndGlobal

@@ -63,6 +63,7 @@
     <Compile Include="JetMethodTests.cs" />
     <Compile Include="JetPeerExceptionTests.cs" />
     <Compile Include="JsonRpcExceptionTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetCallbacksTests.cs" />
     <Compile Include="SetTests.cs" />
     <Compile Include="TestJetConnection.cs" />
@@ -82,12 +83,11 @@
       <Name>SharpJet</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File "$(SolutionDir)\scripts\version.ps1" -git "$(SolutionDir)\packages\PortableGit.2.5.1.01\tools\bin\git.exe" -solutiondir $(SolutionDir) -assembly_info_template "$(SolutionDir)\AssemblyInfo.template" -assembly_info "$(ProjectDir)\Properties\AssemblyInfo.cs" -name "$(ProjectName)" -guid "0663060b-c81b-4fac-9825-6028f9cbecbc"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
